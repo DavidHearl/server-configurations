@@ -25,7 +25,7 @@ class Component(models.Model):
     link_justification = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.get_component_type_display()}: {self.model}"
+        return f"{self.model}"
 
 
 class System(models.Model):
