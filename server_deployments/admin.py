@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CPU, RAM, Motherboard, NIC, PSU, Case, Rack, System
+from .models import *
 
 admin.site.register(CPU)
 admin.site.register(RAM)
@@ -9,3 +9,4 @@ admin.site.register(PSU)
 admin.site.register(Case)
 admin.site.register(Rack)
 admin.site.register(System)
+admin.site.register(StorageDevice)

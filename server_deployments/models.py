@@ -15,7 +15,6 @@ class CPU(models.Model):
 
 
 class RAM(models.Model):
-    model = models.CharField(max_length=255)
     size_gb = models.PositiveIntegerField()
     speed_mhz = models.PositiveIntegerField()
     ecc = models.BooleanField(default=False)
@@ -77,6 +76,21 @@ class Case(models.Model):
         return self.model
 
 
+class StorageDevice(models.Model):
+    model = models.CharField(max_length=255)
+    serial_number = models.CharField(max_length=255, null=True, blank=True)
+    storage_type = models.CharField(max_length=10, choices=[('HDD', 'HDD'), ('SSD', 'SSD'), ('NVMe', 'NVMe')])
+    capacity_gb = models.PositiveIntegerField()
+    rpm = models.PositiveIntegerField(blank=True, null=True)
+    price_each = models.DecimalField(max_digits=10, decimal_places=2)
+    link = models.URLField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        rpm_str = f", {self.rpm}RPM" if self.rpm else ""
+        return f"{self.model} ({self.storage_type}, {self.capacity_gb}GB{rpm_str})"
+
+
 class Rack(models.Model):
     rack = models.CharField(max_length=50)
     size_u = models.PositiveIntegerField()
@@ -88,14 +102,14 @@ class Rack(models.Model):
 class System(models.Model):
     location = models.ForeignKey(Rack, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    role = models.CharField(max_length=255)
     cpu = models.ForeignKey(CPU, on_delete=models.SET_NULL, null=True, blank=True)
-    ram = models.ManyToManyField(RAM, blank=True)
     motherboard = models.ForeignKey(Motherboard, on_delete=models.SET_NULL, null=True, blank=True)
-    nic = models.ManyToManyField(NIC, blank=True)
+    ram = models.ForeignKey(RAM, on_delete=models.SET_NULL, null=True, blank=True)
+    ram_qty = models.PositiveIntegerField(default=1)
+    nic = models.ForeignKey(NIC, on_delete=models.SET_NULL, null=True, blank=True)
     psu = models.ForeignKey(PSU, on_delete=models.SET_NULL, null=True, blank=True)
     case = models.ForeignKey(Case, on_delete=models.SET_NULL, null=True, blank=True)
-    os_use_case = models.CharField(max_length=255, blank=True, null=True)
+    storage_devices = models.ManyToManyField(StorageDevice, blank=True)
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):

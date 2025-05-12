@@ -1,5 +1,5 @@
 from django import forms
-from .models import CPU, RAM, Motherboard, NIC, PSU, Case, Rack, System
+from .models import *
 
 class CPUForm(forms.ModelForm):
     class Meta:
@@ -39,4 +39,9 @@ class RackForm(forms.ModelForm):
 class SystemForm(forms.ModelForm):
     class Meta:
         model = System
+        fields = '__all__'
+
+class StorageDeviceForm(forms.ModelForm):
+    class Meta:
+        model = StorageDevice
         fields = '__all__'

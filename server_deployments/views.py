@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import CPU, RAM, Motherboard, NIC, PSU, Case, Rack, System
-from .forms import CPUForm, RAMForm, MotherboardForm, NICForm, PSUForm, CaseForm, RackForm, SystemForm
+from .models import *
+from .forms import *
 
 def home(request):
     # Handle all forms
@@ -13,6 +13,7 @@ def home(request):
         'case_form': CaseForm(prefix='case'),
         'rack_form': RackForm(prefix='rack'),
         'system_form': SystemForm(prefix='system'),
+        'storage_device_form': StorageDeviceForm(prefix='sd')
     }
 
     if request.method == 'POST':
@@ -58,9 +59,25 @@ def home(request):
                 forms['system_form'].save()
                 return redirect('home')
 
-    systems = System.objects.all().select_related(
-        'cpu', 'motherboard', 'psu', 'case', 'location'
-    ).prefetch_related('ram', 'nic')
+
+    systems = System.objects.all().prefetch_related('storage_devices')
+    for system in systems:
+        # RAM line total
+        system.ram_line_total = (system.ram.price_each * system.ram_qty) if system.ram and system.ram.price_each else 0
+        # Storage line totals
+        system.storage_line_totals = [
+            sd.price_each for sd in system.storage_devices.all() if sd.price_each
+        ]
+        # Calculate total price for all components
+        system.total_price = (
+            (system.cpu.price_each if system.cpu and system.cpu.price_each else 0) +
+            system.ram_line_total +
+            (system.motherboard.price_each if system.motherboard and system.motherboard.price_each else 0) +
+            sum(system.storage_line_totals) +
+            (system.nic.price_each if system.nic and system.nic.price_each else 0) +
+            (system.psu.price_each if system.psu and system.psu.price_each else 0) +
+            (system.case.price_each if system.case and system.case.price_each else 0)
+        )
 
     return render(request, 'server_deployments/home.html', {
         **forms,
