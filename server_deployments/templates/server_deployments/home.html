@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load dict_extras %}
+
 {% block content %}
 <h2>Add New Entries</h2>
 <div style="display: flex; flex-wrap: wrap; gap: 2em;">
@@ -53,159 +55,124 @@
 
 
 
-
-
-
-
-
-
 <hr>
 <h2>All Systems</h2>
 <div style="display: flex; flex-direction: column; gap: 2em;">
-    {% for system in systems %}
-    <div style="background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; box-shadow: 0 2px 8px #e1e4e8; padding: 1.5em;">
-        <div style="font-weight: bold; font-size: 1.2em; margin-bottom: 0.5em;">
-            {{ system.name }} ({{ system.location }})
-            <span style="float:right;"><a href="{% url 'edit_system' system.pk %}">Edit</a></span>
-        </div>
-        <div style="display: flex; flex-direction: column;">
-            <!-- Header Row -->
-            <div class="header-spacing" style="display: flex; font-weight: bold; background: #f3f6fa; border-radius: 4px; padding: 0.5em 0;">
-                <div style="flex-basis: 40px; min-width:40px;">U</div>
-                <div style="flex-basis: 120px; min-width:120px;">Rack</div>
-                <div style="flex-basis: 140px; min-width:140px;">System Name</div>
-                <div style="flex-basis: 120px; min-width:120px;">Component Type</div>
-                <div style="flex: 1;">Model</div>
-                <div style="flex-basis: 40px; min-width:40px;">Qty</div>
-                <div style="flex-basis: 90px; min-width:90px;">Price</div>
-                <div style="flex-basis: 90px; min-width:90px;">Total</div>
-                <!-- <div style="flex-basis: 60px; min-width:60px;">Link</div>
-                <div style="flex: 1;">Notes</div> -->
-            </div>
-            <!-- CPU -->
-            <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
-                <div style="flex-basis: 40px; min-width:40px;">{{ system.case.size_u|default:"" }}</div>
-                <div style="flex-basis: 120px; min-width:120px;">{{ system.location }}</div>
-                <div style="flex-basis: 140px; min-width:140px;">{{ system.name }}</div>
-                <div style="flex-basis: 120px; min-width:120px;">CPU</div>
-                <div style="flex: 1;">{{ system.cpu }}</div>
-                <div style="flex-basis: 40px; min-width:40px;">1</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.cpu.price_each|default:"-" }}</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.cpu.price_each|default:"-" }}</div>
-                <!-- <div style="flex-basis: 60px; min-width:60px;">
-                    {% if system.cpu.link %}<a href="{{ system.cpu.link }}" target="_blank">Link</a>{% endif %}
+    {% for rack in racks %}
+        <div style="margin-bottom: 2em;">
+            <h3>{{ rack }}</h3>
+            {% if systems_by_rack|get_item:rack %}
+                {% for system in systems_by_rack|get_item:rack %}
+                <div style="background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; box-shadow: 0 2px 8px #e1e4e8; padding: 1.5em; margin-bottom: 1em;">
+                    <div style="font-weight: bold; font-size: 1.2em; margin-bottom: 0.5em;">
+                        {{ system.name }}
+                        <span style="float:right;"><a href="{% url 'edit_system' system.pk %}">Edit</a></span>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <!-- Header Row -->
+                        <div class="header-spacing" style="display: flex; font-weight: bold; background: #f3f6fa; border-radius: 4px; padding: 0.5em 0;">
+                            <div style="flex-basis: 40px; min-width:40px;">U</div>
+                            <div style="flex-basis: 140px; min-width:140px;">System Name</div>
+                            <div style="flex-basis: 120px; min-width:120px;">Component Type</div>
+                            <div style="flex: 1;">Model</div>
+                            <div style="flex-basis: 40px; min-width:40px;">Qty</div>
+                            <div style="flex-basis: 90px; min-width:90px;">Price</div>
+                            <div style="flex-basis: 90px; min-width:90px;">Total</div>
+                        </div>
+                        <!-- CPU -->
+                        <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
+                            <div style="flex-basis: 40px; min-width:40px;">{{ system.rack_units }}</div>
+                            <div style="flex-basis: 140px; min-width:140px;">{{ system.name }}</div>
+                            <div style="flex-basis: 120px; min-width:120px;">CPU</div>
+                            <div style="flex: 1;">{{ system.cpu }}</div>
+                            <div style="flex-basis: 40px; min-width:40px;">1</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.cpu.price_each|default:"-" }}</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.cpu.price_each|default:"-" }}</div>
+                        </div>
+                        <!-- RAM -->
+                        <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
+                            <div style="flex-basis: 40px; min-width:40px;"></div>
+                            <div style="flex-basis: 140px; min-width:140px;"></div>
+                            <div style="flex-basis: 120px; min-width:120px;">RAM</div>
+                            <div style="flex: 1;">{{ system.ram }}</div>
+                            <div style="flex-basis: 40px; min-width:40px;">{{ system.ram_qty }}</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.ram.price_each|default:"-" }}</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.ram_line_total|floatformat:2 }}</div>
+                        </div>
+                        <!-- Motherboard -->
+                        <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
+                            <div style="flex-basis: 40px; min-width:40px;"></div>
+                            <div style="flex-basis: 140px; min-width:140px;"></div>
+                            <div style="flex-basis: 120px; min-width:120px;">Motherboard</div>
+                            <div style="flex: 1;">{{ system.motherboard }}</div>
+                            <div style="flex-basis: 40px; min-width:40px;">1</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.motherboard.price_each|default:"-" }}</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.motherboard.price_each|default:"-" }}</div>
+                        </div>
+                        <!-- Storage Devices -->
+                        {% for sd in system.storage_devices.all %}
+                        <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
+                            <div style="flex-basis: 40px; min-width:40px;"></div>
+                            <div style="flex-basis: 140px; min-width:140px;"></div>
+                            <div style="flex-basis: 120px; min-width:120px;">Storage</div>
+                            <div style="flex: 1;">{{ sd }}</div>
+                            <div style="flex-basis: 40px; min-width:40px;">1</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ sd.price_each|default:"-" }}</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ sd.price_each|default:"-" }}</div>
+                        </div>
+                        {% endfor %}
+                        <!-- NIC -->
+                        <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
+                            <div style="flex-basis: 40px; min-width:40px;"></div>
+                            <div style="flex-basis: 140px; min-width:140px;"></div>
+                            <div style="flex-basis: 120px; min-width:120px;">NIC</div>
+                            <div style="flex: 1;">{{ system.nic }}</div>
+                            <div style="flex-basis: 40px; min-width:40px;">1</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.nic.price_each|default:"-" }}</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.nic.price_each|default:"-" }}</div>
+                        </div>
+                        <!-- PSU -->
+                        <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
+                            <div style="flex-basis: 40px; min-width:40px;"></div>
+                            <div style="flex-basis: 140px; min-width:140px;"></div>
+                            <div style="flex-basis: 120px; min-width:120px;">PSU</div>
+                            <div style="flex: 1;">{{ system.psu }}</div>
+                            <div style="flex-basis: 40px; min-width:40px;">1</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.psu.price_each|default:"-" }}</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.psu.price_each|default:"-" }}</div>
+                        </div>
+                        <!-- Case -->
+                        <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
+                            <div style="flex-basis: 40px; min-width:40px;"></div>
+                            <div style="flex-basis: 140px; min-width:140px;"></div>
+                            <div style="flex-basis: 120px; min-width:120px;">Case</div>
+                            <div style="flex: 1;">{{ system.case }}</div>
+                            <div style="flex-basis: 40px; min-width:40px;">1</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.case.price_each|default:"-" }}</div>
+                            <div style="flex-basis: 90px; min-width:90px;">£{{ system.case.price_each|default:"-" }}</div>
+                        </div>
+                        <!-- Total Row -->
+                        <div class="header-spacing" style="display: flex; align-items: center; font-weight: bold; background: #f3f6fa; border-radius: 0 0 4px 4px; margin-top: 2px;">
+                            <div style="flex-basis: 40px; min-width:40px;"></div>
+                            <div style="flex-basis: 140px; min-width:140px;"></div>
+                            <div style="flex-basis: 120px; min-width:120px;"></div>
+                            <div style="flex: 1;"></div>
+                            <div style="flex-basis: 40px; min-width:40px;"></div>
+                            <div style="flex-basis: 90px; min-width:90px; text-align: right; margin-left: auto;">Total:</div>
+                            <div style="flex-basis: 90px; min-width:90px;">
+                                £{{ system.total_price|floatformat:2 }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div style="flex: 1;">{{ system.cpu.notes }}</div> -->
-            </div>
-            <!-- RAM -->
-            <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
-                <div style="flex-basis: 40px; min-width:40px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;"></div>
-                <div style="flex-basis: 140px; min-width:140px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;">RAM</div>
-                <div style="flex: 1;">{{ system.ram }}</div>
-                <div style="flex-basis: 40px; min-width:40px;">{{ system.ram_qty }}</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.ram.price_each|default:"-" }}</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.ram_line_total|floatformat:2 }}</div>
-                <!-- <div style="flex-basis: 60px; min-width:60px;">
-                    {% if system.ram.link %}<a href="{{ system.ram.link }}" target="_blank">Link</a>{% endif %}
-                </div>
-                <div style="flex: 1;">{{ system.ram.notes }}</div> -->
-            </div>
-            <!-- Motherboard -->
-            <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
-                <div style="flex-basis: 40px; min-width:40px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;"></div>
-                <div style="flex-basis: 140px; min-width:140px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;">Motherboard</div>
-                <div style="flex: 1;">{{ system.motherboard }}</div>
-                <div style="flex-basis: 40px; min-width:40px;">1</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.motherboard.price_each|default:"-" }}</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.motherboard.price_each|default:"-" }}</div>
-                <!-- <div style="flex-basis: 60px; min-width:60px;">
-                    {% if system.motherboard.link %}<a href="{{ system.motherboard.link }}" target="_blank">Link</a>{% endif %}
-                </div>
-                <div style="flex: 1;">{{ system.motherboard.notes }}</div> -->
-            </div>
-            <!-- Storage Devices -->
-            {% for sd in system.storage_devices.all %}
-            <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
-                <div style="flex-basis: 40px; min-width:40px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;"></div>
-                <div style="flex-basis: 140px; min-width:140px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;">Storage</div>
-                <div style="flex: 1;">{{ sd }}</div>
-                <div style="flex-basis: 40px; min-width:40px;">1</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ sd.price_each|default:"-" }}</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ sd.price_each|default:"-" }}</div>
-                <!-- <div style="flex-basis: 60px; min-width:60px;">
-                    {% if sd.link %}<a href="{{ sd.link }}" target="_blank">Link</a>{% endif %}
-                </div>
-                <div style="flex: 1;">{{ sd.notes }}</div> -->
-            </div>
-            {% endfor %}
-            <!-- NIC -->
-            <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
-                <div style="flex-basis: 40px; min-width:40px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;"></div>
-                <div style="flex-basis: 140px; min-width:140px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;">NIC</div>
-                <div style="flex: 1;">{{ system.nic }}</div>
-                <div style="flex-basis: 40px; min-width:40px;">1</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.nic.price_each|default:"-" }}</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.nic.price_each|default:"-" }}</div>
-                <!-- <div style="flex-basis: 60px; min-width:60px;">
-                    {% if system.nic.link %}<a href="{{ system.nic.link }}" target="_blank">Link</a>{% endif %}
-                </div>
-                <div style="flex: 1;">{{ system.nic.notes }}</div> -->
-            </div>
-            <!-- PSU -->
-            <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
-                <div style="flex-basis: 40px; min-width:40px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;"></div>
-                <div style="flex-basis: 140px; min-width:140px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;">PSU</div>
-                <div style="flex: 1;">{{ system.psu }}</div>
-                <div style="flex-basis: 40px; min-width:40px;">1</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.psu.price_each|default:"-" }}</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.psu.price_each|default:"-" }}</div>
-                <!-- <div style="flex-basis: 60px; min-width:60px;">
-                    {% if system.psu.link %}<a href="{{ system.psu.link }}" target="_blank">Link</a>{% endif %}
-                </div>
-                <div style="flex: 1;">{{ system.psu.notes }}</div> -->
-            </div>
-            <!-- Case -->
-            <div class="header-spacing" style="display: flex; align-items: center; border-bottom:1px solid #eee;">
-                <div style="flex-basis: 40px; min-width:40px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;"></div>
-                <div style="flex-basis: 140px; min-width:140px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;">Case</div>
-                <div style="flex: 1;">{{ system.case }}</div>
-                <div style="flex-basis: 40px; min-width:40px;">1</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.case.price_each|default:"-" }}</div>
-                <div style="flex-basis: 90px; min-width:90px;">£{{ system.case.price_each|default:"-" }}</div>
-                <!-- <div style="flex-basis: 60px; min-width:60px;">
-                    {% if system.case.link %}<a href="{{ system.case.link }}" target="_blank">Link</a>{% endif %}
-                </div>
-                <div style="flex: 1;">{{ system.case.notes }}</div> -->
-            </div>
-            <!-- Total Row -->
-            <div class="header-spacing" style="display: flex; align-items: center; font-weight: bold; background: #f3f6fa; border-radius: 0 0 4px 4px; margin-top: 2px;">
-                <div style="flex-basis: 40px; min-width:40px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;"></div>
-                <div style="flex-basis: 140px; min-width:140px;"></div>
-                <div style="flex-basis: 120px; min-width:120px;"></div>
-                <div style="flex: 1;"></div>
-                <div style="flex-basis: 40px; min-width:40px;"></div>
-                <div style="flex-basis: 90px; min-width:90px; text-align: right; margin-left: auto;">Total:</div>
-                <div style="flex-basis: 90px; min-width:90px;">
-                    £{{ system.total_price|floatformat:2 }}
-                </div>
-            </div>
+                {% endfor %}
+            {% else %}
+                <div style="padding: 1em;">No systems in this rack.</div>
+            {% endif %}
         </div>
     </div>
     {% empty %}
-    <div style="padding: 1em;">No systems defined.</div>
+        <div style="padding: 1em;">No systems defined.</div>
     {% endfor %}
 </div>
 {% endblock %}

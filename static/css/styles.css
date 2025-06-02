@@ -58,6 +58,7 @@ input, select, textarea {
     border-radius: 4px;
     font-size: 1em;
     background: #fff;
+    box-sizing: border-box;
 }
 
 textarea {

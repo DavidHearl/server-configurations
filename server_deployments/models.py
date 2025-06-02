@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import now
 
 class CPU(models.Model):
     model = models.CharField(max_length=255)
@@ -88,7 +89,7 @@ class StorageDevice(models.Model):
 
     def __str__(self):
         rpm_str = f", {self.rpm}RPM" if self.rpm else ""
-        return f"{self.model} ({self.storage_type}, {self.capacity_gb}GB{rpm_str})"
+        return f"{self.model}-{self.serial_number}"
 
 
 class Rack(models.Model):
@@ -100,6 +101,7 @@ class Rack(models.Model):
 
 
 class System(models.Model):
+    rack_units = models.IntegerField()
     location = models.ForeignKey(Rack, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     cpu = models.ForeignKey(CPU, on_delete=models.SET_NULL, null=True, blank=True)
@@ -114,3 +116,37 @@ class System(models.Model):
 
     def __str__(self):
         return f"{self.location} - {self.name}"
+    
+
+class MovieIndex(models.Model):
+    system = models.ForeignKey('System', on_delete=models.CASCADE, related_name='movie_indexes')
+    name = models.CharField(max_length=255)  # e.g., 'Inception'
+    path = models.TextField(unique=True)
+    file_count = models.IntegerField()
+    folder_size_bytes = models.BigIntegerField()
+    last_scanned = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return self.name
+
+
+class TVShowIndex(models.Model):
+    system = models.ForeignKey('System', on_delete=models.CASCADE, related_name='tv_show_indexes')
+    name = models.CharField(max_length=255)  # e.g., 'Breaking Bad'
+    path = models.TextField(unique=True)
+    season_count = models.IntegerField()
+    total_size_bytes = models.BigIntegerField()
+    last_scanned = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return self.name
+
+class SeasonIndex(models.Model):
+    tv_show = models.ForeignKey(TVShowIndex, on_delete=models.CASCADE, related_name='seasons')
+    name = models.CharField(max_length=255)         # e.g., 'Season 1'
+    path = models.TextField(unique=True)
+    file_count = models.IntegerField()
+    folder_size_bytes = models.BigIntegerField()
+
+    def __str__(self):
+        return f"{self.tv_show.name} - {self.name}"

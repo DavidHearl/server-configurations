@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from .forms import *
+from collections import defaultdict
+
 
 def home(request):
     # Handle all forms
@@ -58,9 +60,16 @@ def home(request):
             if forms['system_form'].is_valid():
                 forms['system_form'].save()
                 return redirect('home')
+        elif 'storage-device-submit' in request.POST:
+            forms['storage_device_form'] = StorageDeviceForm(request.POST, prefix='sd')
+            if forms['storage_device_form'].is_valid():
+                forms['storage_device_form'].save()
+                return redirect('home')
+            else:
+                print("StorageDeviceForm errors:", forms['storage_device_form'].errors)
 
 
-    systems = System.objects.all().prefetch_related('storage_devices')
+    systems = System.objects.all().select_related('location').prefetch_related('storage_devices')
     for system in systems:
         # RAM line total
         system.ram_line_total = (system.ram.price_each * system.ram_qty) if system.ram and system.ram.price_each else 0
@@ -79,6 +88,17 @@ def home(request):
             (system.case.price_each if system.case and system.case.price_each else 0)
         )
 
+        racks = Rack.objects.all()
+        systems_by_rack = defaultdict(list)
+        for system in systems:
+            systems_by_rack[system.location].append(system)
+
+        return render(request, 'server_deployments/home.html', {
+            **forms,
+            'systems_by_rack': systems_by_rack,
+            'racks': racks,
+        })
+
     return render(request, 'server_deployments/home.html', {
         **forms,
         'systems': systems,
@@ -94,3 +114,17 @@ def edit_system(request, pk):
     else:
         form = SystemForm(instance=system, prefix='system')
     return render(request, 'server_deployments/edit_system.html', {'form': form, 'system': system})
+
+
+
+def system_media_index(request, system_id):
+    system = get_object_or_404(System, pk=system_id)
+    movies = system.movie_indexes.all().order_by('name')
+    tv_shows = system.tv_show_indexes.prefetch_related('seasons').order_by('name')
+
+    return render(request, 'server_deployments/system_media_index.html', {
+        'system': system,
+        'movies': movies,
+        'tv_shows': tv_shows
+    })
+

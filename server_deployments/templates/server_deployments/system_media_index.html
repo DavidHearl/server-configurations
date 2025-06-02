@@ -1,0 +1,77 @@
+{% load media_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plex - {{ system.name }} - Media Index</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        h1, h2 { margin-bottom: 1rem; }
+        table { width: 100%; margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+
+<h1>Plex - {{ system.name }} - Media Index</h1>
+
+<h2>🎬 Movies</h2>
+<table id="movies-table" class="display">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Files</th>
+            <th>Size</th>
+            <th>Scanned</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for movie in movies %}
+        <tr>
+            <td>{{ movie.name }}</td>
+            <td>{{ movie.file_count }}</td>
+            <td>{{ movie.folder_size_bytes|filesizeformat }}</td>
+            <td>{{ movie.last_scanned|scanned_ago }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>📺 TV Shows</h2>
+<table id="tv-table" class="display">
+    <thead>
+        <tr>
+            <th>Show</th>
+            <th>Seasons</th>
+            <th>Total Size</th>
+            <th>Scanned</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for show in tv_shows %}
+        <tr>
+            <td>{{ show.name }}</td>
+            <td>{{ show.season_count }}</td>
+            <td>{{ show.total_size_bytes|filesizeformat }}</td>
+            <td>{{ show.last_scanned|scanned_ago }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#movies-table').DataTable({
+            pageLength: 25,
+            order: [[0, 'asc']]
+        });
+        $('#tv-table').DataTable({
+            pageLength: 25,
+            order: [[0, 'asc']]
+        });
+    });
+</script>
+
+</body>
+</html>
