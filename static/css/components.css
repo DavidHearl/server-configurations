@@ -46,7 +46,7 @@
 .component-table input, 
 .component-table select {
     width: 100%;
-    padding: 8px 10px;
+    padding: 4px;
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;

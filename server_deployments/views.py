@@ -17,6 +17,7 @@ def components(request):
     psus = PSU.objects.all()
     cases = Case.objects.all()
     storage_devices = StorageDevice.objects.all()
+    hba_devices = HBA.objects.all()
     racks = Rack.objects.all()
     
     # Create forms for each component type
@@ -27,6 +28,7 @@ def components(request):
     psu_form = PSUForm()
     case_form = CaseForm()
     storage_form = StorageDeviceForm()
+    hba_form = HBAForm()
     rack_form = RackForm()
     
     # Check if we're in edit mode
@@ -75,6 +77,7 @@ def components(request):
         'psus': psus,
         'cases': cases,
         'storage_devices': storage_devices,
+        'hba_devices': hba_devices,
         'racks': racks,
         
         # All forms
@@ -85,6 +88,7 @@ def components(request):
         'psu_form': psu_form,
         'case_form': case_form,
         'storage_form': storage_form,
+        'hba_form': hba_form,
         'rack_form': rack_form,
         
         # Edit mode info
@@ -257,6 +261,29 @@ def delete_storage(request, storage_id):
     storage = get_object_or_404(StorageDevice, id=storage_id)
     if request.method == 'POST':
         storage.delete()
+    return redirect('components')
+
+# HBA CRUD operations
+def add_hba(request):
+    if request.method == 'POST':
+        form = HBAForm(request.POST)
+        if form.is_valid():
+            form.save()
+    return redirect('components')
+
+def edit_hba(request, hba_id):
+    hba = get_object_or_404(HBA, id=hba_id)
+    if request.method == 'POST':
+        form = HBAForm(request.POST, instance=hba)
+        if form.is_valid():
+            form.save()
+            return redirect('components')
+    return redirect(f'/components/?edit={hba_id}&type=hba&tab=hba-tab')
+
+def delete_hba(request, hba_id):
+    hba = get_object_or_404(HBA, id=hba_id)
+    if request.method == 'POST':
+        hba.delete()
     return redirect('components')
 
 

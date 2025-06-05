@@ -45,3 +45,8 @@ class StorageDeviceForm(forms.ModelForm):
     class Meta:
         model = StorageDevice
         fields = '__all__'
+
+class HBAForm(forms.ModelForm):
+    class Meta:
+        model = HBA
+        fields = '__all__'

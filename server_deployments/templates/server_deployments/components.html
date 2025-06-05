@@ -19,6 +19,7 @@
             <button class="tab-button" onclick="openTab(event, 'psu-tab')">PSUs</button>
             <button class="tab-button" onclick="openTab(event, 'case-tab')">Cases</button>
             <button class="tab-button" onclick="openTab(event, 'storage-tab')">Storage</button>
+            <button class="tab-button" onclick="openTab(event, 'hba-tab')">HBAs</button>
             <button class="tab-button" onclick="openTab(event, 'rack-tab')">Racks</button>
         </div>
         
@@ -39,7 +40,8 @@
                                 <th>Threads</th>
                                 <th>Base Clock (GHz)</th>
                                 <th>Wattage</th>
-                                <th>Price ($)</th>
+                                <th>Price (£)</th>
+                                <th>Owned</th>
                                 <th>Link</th>
                                 <th>Actions</th>
                             </tr>
@@ -57,6 +59,7 @@
                                         <td>{{ cpu_form.base_clock_ghz }}</td>
                                         <td>{{ cpu_form.wattage }}</td>
                                         <td>{{ cpu_form.price_each }}</td>
+                                        <td>{{ cpu_form.owned }}</td>
                                         <td>{{ cpu_form.link }}</td>
                                         <td class="actions">
                                             <button type="submit" class="btn-save">Save</button>
@@ -72,7 +75,8 @@
                                     <td>{{ cpu.threads }}</td>
                                     <td>{{ cpu.base_clock_ghz }}</td>
                                     <td>{{ cpu.wattage }}W</td>
-                                    <td>${{ cpu.price_each }}</td>
+                                    <td>£{{ cpu.price_each }}</td>
+                                    <td>{{ cpu.owned }}</td>
                                     <td>
                                         {% if cpu.link %}
                                         <a href="{{ cpu.link }}" target="_blank" class="link-btn">View</a>
@@ -99,6 +103,7 @@
                                     <td>{{ cpu_form.base_clock_ghz }}</td>
                                     <td>{{ cpu_form.wattage }}</td>
                                     <td>{{ cpu_form.price_each }}</td>
+                                    <td>{{ cpu_form.owned }}</td>
                                     <td>{{ cpu_form.link }}</td>
                                     <td>
                                         <button type="submit" class="btn-add">Add</button>
@@ -125,7 +130,8 @@
                                 <th>Size (GB)</th>
                                 <th>Speed (MHz)</th>
                                 <th>ECC</th>
-                                <th>Price ($)</th>
+                                <th>Price (£)</th>
+                                <th>Owned</th>
                                 <th>Link</th>
                                 <th>Actions</th>
                             </tr>
@@ -141,6 +147,7 @@
                                         <td>{{ ram_form.speed_mhz }}</td>
                                         <td>{{ ram_form.ecc }}</td>
                                         <td>{{ ram_form.price_each }}</td>
+                                        <td>{{ ram_form.owned }}</td>
                                         <td>{{ ram_form.link }}</td>
                                         <td class="actions">
                                             <button type="submit" class="btn-save">Save</button>
@@ -152,7 +159,8 @@
                                     <td>{{ ram.size_gb }}</td>
                                     <td>{{ ram.speed_mhz }}</td>
                                     <td>{% if ram.ecc %}Yes{% else %}No{% endif %}</td>
-                                    <td>${{ ram.price_each }}</td>
+                                    <td>£{{ ram.price_each }}</td>
+                                    <td>{{ ram.owned }}</td>
                                     <td>
                                         {% if ram.link %}
                                         <a href="{{ ram.link }}" target="_blank" class="link-btn">View</a>
@@ -177,6 +185,7 @@
                                     <td>{{ ram_form.speed_mhz }}</td>
                                     <td>{{ ram_form.ecc }}</td>
                                     <td>{{ ram_form.price_each }}</td>
+                                    <td>{{ ram_form.owned }}</td>
                                     <td>{{ ram_form.link }}</td>
                                     <td>
                                         <button type="submit" class="btn-add">Add</button>
@@ -201,7 +210,8 @@
                                 <th>Model</th>
                                 <th>Socket</th>
                                 <th>Form Factor</th>
-                                <th>Price ($)</th>
+                                <th>Price (£)</th>
+                                <th>Owned</th>
                                 <th>Link</th>
                                 <th>Actions</th>
                             </tr>
@@ -217,6 +227,7 @@
                                         <td>{{ motherboard_form.socket }}</td>
                                         <td>{{ motherboard_form.form_factor }}</td>
                                         <td>{{ motherboard_form.price_each }}</td>
+                                        <td>{{ motherboard_form.owned }}</td>
                                         <td>{{ motherboard_form.link }}</td>
                                         <td class="actions">
                                             <button type="submit" class="btn-save">Save</button>
@@ -228,7 +239,8 @@
                                     <td>{{ motherboard.model }}</td>
                                     <td>{{ motherboard.socket }}</td>
                                     <td>{{ motherboard.form_factor }}</td>
-                                    <td>${{ motherboard.price_each }}</td>
+                                    <td>£{{ motherboard.price_each }}</td>
+                                    <td>{{ motherboard.owned }}</td>
                                     <td>
                                         {% if motherboard.link %}
                                         <a href="{{ motherboard.link }}" target="_blank" class="link-btn">View</a>
@@ -253,6 +265,7 @@
                                     <td>{{ motherboard_form.socket }}</td>
                                     <td>{{ motherboard_form.form_factor }}</td>
                                     <td>{{ motherboard_form.price_each }}</td>
+                                    <td>{{ motherboard_form.owned }}</td>
                                     <td>{{ motherboard_form.link }}</td>
                                     <td>
                                         <button type="submit" class="btn-add">Add</button>
@@ -278,7 +291,8 @@
                                 <th>Speed (Gbps)</th>
                                 <th>Ports</th>
                                 <th>Interface</th>
-                                <th>Price ($)</th>
+                                <th>Price (£)</th>
+                                <th>Owned</th>
                                 <th>Link</th>
                                 <th>Actions</th>
                             </tr>
@@ -295,6 +309,7 @@
                                         <td>{{ nic_form.port_count }}</td>
                                         <td>{{ nic_form.interface_type }}</td>
                                         <td>{{ nic_form.price_each }}</td>
+                                        <td>{{ nic_form.owned }}</td>
                                         <td>{{ nic_form.link }}</td>
                                         <td class="actions">
                                             <button type="submit" class="btn-save">Save</button>
@@ -307,7 +322,8 @@
                                     <td>{{ nic.speed_gbps }}</td>
                                     <td>{{ nic.port_count }}</td>
                                     <td>{{ nic.interface_type }}</td>
-                                    <td>${{ nic.price_each }}</td>
+                                    <td>£{{ nic.price_each }}</td>
+                                    <td>{{ nic.owned }}</td>
                                     <td>
                                         {% if nic.link %}
                                         <a href="{{ nic.link }}" target="_blank" class="link-btn">View</a>
@@ -333,6 +349,7 @@
                                     <td>{{ nic_form.port_count }}</td>
                                     <td>{{ nic_form.interface_type }}</td>
                                     <td>{{ nic_form.price_each }}</td>
+                                    <td>{{ nic_form.owned }}</td>
                                     <td>{{ nic_form.link }}</td>
                                     <td>
                                         <button type="submit" class="btn-add">Add</button>
@@ -357,7 +374,8 @@
                                 <th>Model</th>
                                 <th>Wattage</th>
                                 <th>Efficiency</th>
-                                <th>Price ($)</th>
+                                <th>Price (£)</th>
+                                <th>Owned</th>
                                 <th>Link</th>
                                 <th>Actions</th>
                             </tr>
@@ -373,6 +391,7 @@
                                         <td>{{ psu_form.wattage }}</td>
                                         <td>{{ psu_form.efficiency_rating }}</td>
                                         <td>{{ psu_form.price_each }}</td>
+                                        <td>{{ psu_form.owned }}</td>
                                         <td>{{ psu_form.link }}</td>
                                         <td class="actions">
                                             <button type="submit" class="btn-save">Save</button>
@@ -384,7 +403,8 @@
                                     <td>{{ psu.model }}</td>
                                     <td>{{ psu.wattage }}W</td>
                                     <td>{{ psu.efficiency_rating }}</td>
-                                    <td>${{ psu.price_each }}</td>
+                                    <td>£{{ psu.price_each }}</td>
+                                    <td>{{ psu.owned }}</td>
                                     <td>
                                         {% if psu.link %}
                                         <a href="{{ psu.link }}" target="_blank" class="link-btn">View</a>
@@ -409,6 +429,7 @@
                                     <td>{{ psu_form.wattage }}</td>
                                     <td>{{ psu_form.efficiency_rating }}</td>
                                     <td>{{ psu_form.price_each }}</td>
+                                    <td>{{ psu_form.owned }}</td>
                                     <td>{{ psu_form.link }}</td>
                                     <td>
                                         <button type="submit" class="btn-add">Add</button>
@@ -434,7 +455,8 @@
                                 <th>Form Factor</th>
                                 <th>Drive Bays</th>
                                 <th>Expansion Slots</th>
-                                <th>Price ($)</th>
+                                <th>Price (£)</th>
+                                <th>Owned</th>
                                 <th>Link</th>
                                 <th>Actions</th>
                             </tr>
@@ -451,6 +473,7 @@
                                         <td>{{ case_form.drive_bays }}</td>
                                         <td>{{ case_form.expansion_slots }}</td>
                                         <td>{{ case_form.price_each }}</td>
+                                        <td>{{ case_form.owned }}</td>
                                         <td>{{ case_form.link }}</td>
                                         <td class="actions">
                                             <button type="submit" class="btn-save">Save</button>
@@ -463,7 +486,8 @@
                                     <td>{{ case.form_factor }}</td>
                                     <td>{{ case.drive_bays }}</td>
                                     <td>{{ case.expansion_slots }}</td>
-                                    <td>${{ case.price_each }}</td>
+                                    <td>£{{ case.price_each }}</td>
+                                    <td>{{ case.owned }}</td>
                                     <td>
                                         {% if case.link %}
                                         <a href="{{ case.link }}" target="_blank" class="link-btn">View</a>
@@ -489,6 +513,7 @@
                                     <td>{{ case_form.drive_bays }}</td>
                                     <td>{{ case_form.expansion_slots }}</td>
                                     <td>{{ case_form.price_each }}</td>
+                                    <td>{{ case_form.owned }}</td>
                                     <td>{{ case_form.link }}</td>
                                     <td>
                                         <button type="submit" class="btn-add">Add</button>
@@ -511,10 +536,11 @@
                         <thead>
                             <tr>
                                 <th>Model</th>
+                                <th>Serial #</th>
                                 <th>Type</th>
                                 <th>Capacity</th>
-                                <th>Interface</th>
-                                <th>Price ($)</th>
+                                <th>RPM</th>
+                                <th>Price (£)</th>
                                 <th>Link</th>
                                 <th>Actions</th>
                             </tr>
@@ -527,9 +553,10 @@
                                     <form method="post" action="{% url 'edit_storage' storage.id %}">
                                         {% csrf_token %}
                                         <td>{{ storage_form.model }}</td>
-                                        <td>{{ storage_form.type }}</td>
-                                        <td>{{ storage_form.capacity_gb }}</td>
-                                        <td>{{ storage_form.interface }}</td>
+                                        <td>{{ storage_form.serial_number }}</td>
+                                        <td>{{ storage_form.storage_type }}</td>
+                                        <td>{{ storage_form.capacity_tb }}</td>
+                                        <td>{{ storage_form.rpm }}</td>
                                         <td>{{ storage_form.price_each }}</td>
                                         <td>{{ storage_form.link }}</td>
                                         <td class="actions">
@@ -540,10 +567,11 @@
                                 <!-- Otherwise show the normal view -->
                                 {% else %}
                                     <td>{{ storage.model }}</td>
-                                    <td>{{ storage.type }}</td>
-                                    <td>{{ storage.capacity_gb }} GB</td>
-                                    <td>{{ storage.interface }}</td>
-                                    <td>${{ storage.price_each }}</td>
+                                    <td>{{ storage.serial_number }}</td>
+                                    <td>{{ storage.storage_type }}</td>
+                                    <td>{{ storage.capacity_tb }} TB</td>
+                                    <td>{{ storage.rpm }}</td>
+                                    <td>£{{ storage.price_each }}</td>
                                     <td>
                                         {% if storage.link %}
                                         <a href="{{ storage.link }}" target="_blank" class="link-btn">View</a>
@@ -565,9 +593,10 @@
                                 <form method="post" action="{% url 'add_storage' %}">
                                     {% csrf_token %}
                                     <td>{{ storage_form.model }}</td>
-                                    <td>{{ storage_form.type }}</td>
-                                    <td>{{ storage_form.capacity_gb }}</td>
-                                    <td>{{ storage_form.interface }}</td>
+                                    <td>{{ storage_form.serial_number }}</td>
+                                    <td>{{ storage_form.storage_type }}</td>
+                                    <td>{{ storage_form.capacity_tb }}</td>
+                                    <td>{{ storage_form.rpm }}</td>
                                     <td>{{ storage_form.price_each }}</td>
                                     <td>{{ storage_form.link }}</td>
                                     <td>
@@ -582,6 +611,94 @@
             </div>
         </div>
 
+        <!-- HBA Tab -->
+        <div id="hba-tab" class="tab-content">
+            <div class="card">
+            <div class="card-body">
+                <h2 class="component-title">HBAs</h2>
+                <table class="component-table">
+                <thead>
+                    <tr>
+                    <th>Model</th>
+                    <th>Internal Connectors</th>
+                    <th>External Connectors</th>
+                    <th>Connector</th>
+                    <th>Speed</th>
+                    <th>Price (£)</th>
+                    <th>Owned</th>
+                    <th>Link</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hba in hba_devices %}
+                    <tr {% if edit_mode and edit_id == hba.id|stringformat:"i" and component_type == 'hba' %}class="editing"{% endif %}>
+                    <!-- If we're editing this HBA, show the form -->
+                    {% if edit_mode and edit_id == hba.id|stringformat:"i" and component_type == 'hba' %}
+                        <form method="post" action="{% url 'edit_hba' hba.id %}">
+                        {% csrf_token %}
+                        <td>{{ hba_form.model }}</td>
+                        <td>{{ hba_form.internal_connectors }}</td>
+                        <td>{{ hba_form.external_connectors }}</td>
+                        <td>{{ hba_form.connector_type }}</td>
+                        <td>{{ hba_form.speed }}</td>
+                        <td>{{ hba_form.price_each }}</td>
+                        <td>{{ hba_form.owned }}</td>
+                        <td>{{ hba_form.link }}</td>
+                        <td class="actions">
+                            <button type="submit" class="btn-save">Save</button>
+                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                        </td>
+                        </form>
+                    <!-- Otherwise show the normal view -->
+                    {% else %}
+                        <td>{{ hba.model }}</td>
+                        <td>{{ hba.internal_connectors }}</td>
+                        <td>{{ hba.external_connectors }}</td>
+                        <td>{{ hba.connector_type }}</td>
+                        <td>{{ hba.speed }}</td>
+                        <td>£{{ hba.price_each }}</td>
+                        <td>{% if hba.owned %}Yes{% else %}No{% endif %}</td>
+                        <td>
+                        {% if hba.link %}
+                        <a href="{{ hba.link }}" target="_blank" class="link-btn">View</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                        </td>
+                        <td class="actions">
+                        <a href="{% url 'edit_hba' hba.id %}" class="btn-edit">Edit</a>
+                        <button class="btn-delete" onclick="deleteComponent('{% url 'delete_hba' hba.id %}')">Delete</button>
+                        </td>
+                    {% endif %}
+                    </tr>
+                    {% endfor %}
+                    
+                    <!-- Add New HBA Row -->
+                    {% if not edit_mode or component_type != 'hba' %}
+                    <tr class="add-row">
+                    <form method="post" action="{% url 'add_hba' %}">
+                        {% csrf_token %}
+                        <td>{{ hba_form.model }}</td>
+                        <td>{{ hba_form.internal_connectors }}</td>
+                        <td>{{ hba_form.external_connectors }}</td>
+                        <td>{{ hba_form.connector_type }}</td>
+                        <td>{{ hba_form.speed }}</td>
+                        <td>{{ hba_form.price_each }}</td>
+                        <td>{{ hba_form.owned }}</td>
+                        <td>{{ hba_form.link }}</td>
+                        <td>
+                        <button type="submit" class="btn-add">Add</button>
+                        </td>
+                    </form>
+                    </tr>
+                    {% endif %}
+                </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+
         <!-- Rack Tab -->
         <div id="rack-tab" class="tab-content">
             <div class="card">
@@ -593,7 +710,8 @@
                                 <th>Name</th>
                                 <th>Location</th>
                                 <th>Units</th>
-                                <th>Price ($)</th>
+                                <th>Price (£)</th>
+                                <th>Owned</th>
                                 <th>Link</th>
                                 <th>Actions</th>
                             </tr>
@@ -609,6 +727,7 @@
                                         <td>{{ rack_form.location }}</td>
                                         <td>{{ rack_form.units }}</td>
                                         <td>{{ rack_form.price }}</td>
+                                        <td>{{ rack_form.owned }}</td>
                                         <td>{{ rack_form.link }}</td>
                                         <td class="actions">
                                             <button type="submit" class="btn-save">Save</button>
@@ -620,7 +739,8 @@
                                     <td>{{ rack.name }}</td>
                                     <td>{{ rack.location }}</td>
                                     <td>{{ rack.units }}U</td>
-                                    <td>${{ rack.price }}</td>
+                                    <td>£{{ rack.price }}</td>
+                                    <td>{{ rack.owned }}</td>
                                     <td>
                                         {% if rack.link %}
                                         <a href="{{ rack.link }}" target="_blank" class="link-btn">View</a>
@@ -645,6 +765,7 @@
                                     <td>{{ rack_form.location }}</td>
                                     <td>{{ rack_form.units }}</td>
                                     <td>{{ rack_form.price }}</td>
+                                    <td>{{ rack_form.owned }}</td>
                                     <td>{{ rack_form.link }}</td>
                                     <td>
                                         <button type="submit" class="btn-add">Add</button>
@@ -689,20 +810,6 @@
                     }
                 }
             }
-        }
-        
-        // Function to handle delete with confirmation
-        function deleteCPU(url) {
-            if (confirm('Are you sure you want to delete this component?')) {
-                const form = document.getElementById('delete-form');
-                form.action = url;
-                form.submit();
-            }
-        }
-        
-        // Use the same function for all component types
-        function deleteComponent(url) {
-            deleteCPU(url);
         }
         
         // Check for tab parameter in URL when page loads

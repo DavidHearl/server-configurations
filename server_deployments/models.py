@@ -9,6 +9,7 @@ class CPU(models.Model):
     wattage = models.PositiveIntegerField()
     price_each = models.DecimalField(max_digits=10, decimal_places=2)
     link = models.URLField(blank=True, null=True)
+    owned = models.IntegerField()
 
     def __str__(self):
         return f"{self.model} ({self.cores}C/{self.threads}T)"
@@ -20,6 +21,7 @@ class RAM(models.Model):
     ecc = models.BooleanField(default=False)
     price_each = models.DecimalField(max_digits=10, decimal_places=2)
     link = models.URLField(blank=True, null=True)
+    owned = models.IntegerField()
 
     def __str__(self):
         return f"{self.size_gb}GB {self.speed_mhz}MHz {'ECC' if self.ecc else 'Non-ECC'}"
@@ -31,6 +33,7 @@ class Motherboard(models.Model):
     form_factor = models.CharField(max_length=50)
     price_each = models.DecimalField(max_digits=10, decimal_places=2)
     link = models.URLField(blank=True, null=True)
+    owned = models.IntegerField()
 
     def __str__(self):
         return self.model
@@ -43,6 +46,7 @@ class NIC(models.Model):
     interface_type = models.CharField(max_length=50, choices=[('SFP+', 'SFP+'), ('RJ45', 'RJ45')])
     price_each = models.DecimalField(max_digits=10, decimal_places=2)
     link = models.URLField(blank=True, null=True)
+    owned = models.IntegerField()
 
     def __str__(self):
         return f"{self.model} {self.speed_gbps}Gbps {self.interface_type}"
@@ -54,9 +58,24 @@ class PSU(models.Model):
     efficiency_rating = models.CharField(max_length=50)
     price_each = models.DecimalField(max_digits=10, decimal_places=2)
     link = models.URLField(blank=True, null=True)
+    owned = models.IntegerField()
 
     def __str__(self):
         return f"{self.model} {self.wattage}W {self.efficiency_rating}"
+    
+
+class HBA(models.Model):
+    model = models.CharField(max_length=255)
+    internal_connectors = models.IntegerField()
+    external_connectors = models.IntegerField()
+    connector_type = models.CharField(max_length=255)
+    speed = models.CharField(max_length=255)
+    price_each = models.DecimalField(max_digits=10, decimal_places=2)
+    link = models.URLField(blank=True, null=True)
+    owned = models.IntegerField()
+
+    def __str__(self):
+        return self.model
 
 
 class Case(models.Model):
@@ -66,6 +85,7 @@ class Case(models.Model):
     expansion_slots = models.PositiveIntegerField()
     price_each = models.DecimalField(max_digits=10, decimal_places=2)
     link = models.URLField(blank=True, null=True)
+    owned = models.IntegerField()
 
     def __str__(self):
         return self.model
@@ -75,7 +95,7 @@ class StorageDevice(models.Model):
     model = models.CharField(max_length=255)
     serial_number = models.CharField(max_length=255, null=True, blank=True)
     storage_type = models.CharField(max_length=10, choices=[('HDD', 'HDD'), ('SSD', 'SSD'), ('NVMe', 'NVMe')])
-    capacity_gb = models.PositiveIntegerField()
+    capacity_tb = models.PositiveIntegerField()
     rpm = models.PositiveIntegerField(blank=True, null=True)
     price_each = models.DecimalField(max_digits=10, decimal_places=2)
     link = models.URLField(blank=True, null=True)

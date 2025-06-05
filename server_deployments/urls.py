@@ -40,6 +40,11 @@ urlpatterns = [
     path('components/add-storage/', views.add_storage, name='add_storage'),
     path('components/edit-storage/<int:storage_id>/', views.edit_storage, name='edit_storage'),
     path('components/delete-storage/<int:storage_id>/', views.delete_storage, name='delete_storage'),
+
+    # HBA routes
+    path('components/add-hba/', views.add_hba, name='add_hba'),
+    path('components/edit-hba/<int:hba_id>/', views.edit_hba, name='edit_hba'),
+    path('components/delete-hba/<int:hba_id>/', views.delete_hba, name='delete_hba'),
     
     # Rack routes
     path('components/add-rack/', views.add_rack, name='add_rack'),
