@@ -4,9 +4,25 @@
     <meta charset="UTF-8">
     <title>{% block title %}My Django App{% endblock %}</title>
     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/navigation.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
 </head>
 <body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="{% url 'home' %}">Server Configurations</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{% url 'home' %}" class="nav-item">Home</a></li>
+                <li><a href="{% url 'components' %}" class="nav-item">Components</a></li>
+                <li><a href="{% url 'databases' %}" class="nav-item">Databases</a></li>
+                <li><a href="{% url 'admin:index' %}" class="nav-item">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <main>
         {% block content %}
         {% endblock %}

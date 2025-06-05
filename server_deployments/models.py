@@ -150,3 +150,16 @@ class SeasonIndex(models.Model):
 
     def __str__(self):
         return f"{self.tv_show.name} - {self.name}"
+
+
+class MediaFile(models.Model):
+    path = models.TextField(unique=True)
+    name = models.CharField(max_length=255)
+    extension = models.CharField(max_length=10)
+    size_bytes = models.BigIntegerField()
+
+    movie = models.ForeignKey('MovieIndex', on_delete=models.CASCADE, null=True, blank=True, related_name='files')
+    season = models.ForeignKey('SeasonIndex', on_delete=models.CASCADE, null=True, blank=True, related_name='files')
+
+    def __str__(self):
+        return self.name

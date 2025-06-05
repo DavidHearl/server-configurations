@@ -51,6 +51,36 @@ def get_folder_info(client, folder_path):
 
     return size, file_count
 
+def get_files_in_folder(client, folder_path):
+    command = f'find "{folder_path}" -type f'
+    stdin, stdout, _ = client.exec_command(command)
+    files = stdout.read().decode().strip().split('\n')
+
+    file_details = []
+    for file_path in files:
+        if not file_path:
+            continue
+
+        # Get size
+        size_cmd = f'stat -c%s "{file_path}"'
+        stdin, stdout, _ = client.exec_command(size_cmd)
+        size = int(stdout.read().decode().strip())
+
+        name = os.path.basename(file_path)
+        ext = os.path.splitext(name)[1][1:].lower() or 'unknown'
+
+        file_details.append({
+            'path': file_path,
+            'name': name,
+            'extension': ext,
+            'size': size
+        })
+
+    return file_details
+
+
+from server_deployments.models import MediaFile
+
 def scan_movies(client, path, system):
     command = f'find "{path}" -mindepth 1 -maxdepth 1 -type d'
     stdin, stdout, _ = client.exec_command(command)
@@ -58,17 +88,31 @@ def scan_movies(client, path, system):
 
     for folder in folders:
         if folder:
-            size, count = get_folder_info(client, folder)
-            MovieIndex.objects.update_or_create(
+            files = get_files_in_folder(client, folder)
+            size = sum(f['size'] for f in files)
+
+            movie_obj, _ = MovieIndex.objects.update_or_create(
                 system=system,
                 path=folder,
                 defaults={
                     'name': os.path.basename(folder),
-                    'file_count': count,
+                    'file_count': len(files),
                     'folder_size_bytes': size,
                     'last_scanned': now()
                 }
             )
+
+            # Clear old files
+            MediaFile.objects.filter(movie=movie_obj).delete()
+
+            for f in files:
+                MediaFile.objects.create(
+                    movie=movie_obj,
+                    path=f['path'],
+                    name=f['name'],
+                    extension=f['extension'],
+                    size_bytes=f['size']
+                )
 
 
 def scan_tv_programs(client, path, system):

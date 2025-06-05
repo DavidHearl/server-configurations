@@ -104,6 +104,61 @@ def home(request):
         'systems': systems,
     })
 
+
+def components(request):
+    forms = {
+        'cpu_form': CPUForm(prefix='cpu'),
+        'ram_form': RAMForm(prefix='ram'),
+        'motherboard_form': MotherboardForm(prefix='mb'),
+        'nic_form': NICForm(prefix='nic'),
+        'psu_form': PSUForm(prefix='psu'),
+        'case_form': CaseForm(prefix='case'),
+        'rack_form': RackForm(prefix='rack'),
+    }
+
+    if request.method == 'POST':
+        if 'cpu-submit' in request.POST:
+            forms['cpu_form'] = CPUForm(request.POST, prefix='cpu')
+            if forms['cpu_form'].is_valid():
+                forms['cpu_form'].save()
+                return redirect('components')
+        elif 'ram-submit' in request.POST:
+            forms['ram_form'] = RAMForm(request.POST, prefix='ram')
+            if forms['ram_form'].is_valid():
+                forms['ram_form'].save()
+                return redirect('components')
+        elif 'mb-submit' in request.POST:
+            forms['motherboard_form'] = MotherboardForm(request.POST, prefix='mb')
+            if forms['motherboard_form'].is_valid():
+                forms['motherboard_form'].save()
+                return redirect('components')
+        elif 'nic-submit' in request.POST:
+            forms['nic_form'] = NICForm(request.POST, prefix='nic')
+            if forms['nic_form'].is_valid():
+                forms['nic_form'].save()
+                return redirect('components')
+        elif 'psu-submit' in request.POST:
+            forms['psu_form'] = PSUForm(request.POST, prefix='psu')
+            if forms['psu_form'].is_valid():
+                forms['psu_form'].save()
+                return redirect('components')
+        elif 'case-submit' in request.POST:
+            forms['case_form'] = CaseForm(request.POST, prefix='case')
+            if forms['case_form'].is_valid():
+                forms['case_form'].save()
+                return redirect('components')
+        elif 'rack-submit' in request.POST:
+            forms['rack_form'] = RackForm(request.POST, prefix='rack')
+            if forms['rack_form'].is_valid():
+                forms['rack_form'].save()
+                return redirect('components')
+
+    return render(request, 'server_deployments/components.html', forms)
+
+
+def databases(request):
+    return render(request, 'server_deployments/databases.html')
+
 def edit_system(request, pk):
     system = get_object_or_404(System, pk=pk)
     if request.method == 'POST':

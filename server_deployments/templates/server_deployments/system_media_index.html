@@ -1,17 +1,7 @@
+{% extends 'base.html' %}
 {% load media_tags %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Plex - {{ system.name }} - Media Index</title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <style>
-        body { font-family: sans-serif; padding: 2rem; }
-        h1, h2 { margin-bottom: 1rem; }
-        table { width: 100%; margin-bottom: 2rem; }
-    </style>
-</head>
-<body>
 
+{% block content %}
 <h1>Plex - {{ system.name }} - Media Index</h1>
 
 <h2>🎬 Movies</h2>
@@ -22,6 +12,7 @@
             <th>Files</th>
             <th>Size</th>
             <th>Scanned</th>
+            <th>File Types</th>
         </tr>
     </thead>
     <tbody>
@@ -31,6 +22,13 @@
             <td>{{ movie.file_count }}</td>
             <td>{{ movie.folder_size_bytes|filesizeformat }}</td>
             <td>{{ movie.last_scanned|scanned_ago }}</td>
+            <td>
+                {% with movie.files.values_list 'extension' as exts %}
+                    {% for ext in exts|dictsort %}
+                        {{ ext.0 }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% endwith %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -58,6 +56,7 @@
     </tbody>
 </table>
 
+{% endblock %}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script>
@@ -73,5 +72,3 @@
     });
 </script>
 
-</body>
-</html>
