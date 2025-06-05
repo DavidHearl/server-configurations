@@ -9,94 +9,709 @@
 
 {% block content %}
     <div class="container">
-        <h1 class="page-title">CPU Components</h1>
+        <h1 class="page-title">Hardware Components</h1>
         
-        <div class="card">
-            <div class="card-body">
-                <form id="delete-form" method="POST" style="display: none;">
-                    {% csrf_token %}
-                </form>
-                
-                <table class="component-table">
-                    <thead>
-                        <tr>
-                            <th>Model</th>
-                            <th>Cores</th>
-                            <th>Threads</th>
-                            <th>Base Clock (GHz)</th>
-                            <th>Wattage</th>
-                            <th>Price ($)</th>
-                            <th>Link</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for cpu in cpus %}
-                        <tr {% if edit_mode and edit_id == cpu.id|stringformat:"i" %}class="editing"{% endif %}>
-                            <!-- If we're editing this CPU, show the form -->
-                            {% if edit_mode and edit_id == cpu.id|stringformat:"i" %}
-                                <form method="post" action="{% url 'edit_cpu' cpu.id %}">
-                                    {% csrf_token %}
-                                    <td>{{ form.model }}</td>
-                                    <td>{{ form.cores }}</td>
-                                    <td>{{ form.threads }}</td>
-                                    <td>{{ form.base_clock_ghz }}</td>
-                                    <td>{{ form.wattage }}</td>
-                                    <td>{{ form.price_each }}</td>
-                                    <td>{{ form.link }}</td>
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'cpu-tab')">CPUs</button>
+            <button class="tab-button" onclick="openTab(event, 'ram-tab')">RAM</button>
+            <button class="tab-button" onclick="openTab(event, 'motherboard-tab')">Motherboards</button>
+            <button class="tab-button" onclick="openTab(event, 'nic-tab')">NICs</button>
+            <button class="tab-button" onclick="openTab(event, 'psu-tab')">PSUs</button>
+            <button class="tab-button" onclick="openTab(event, 'case-tab')">Cases</button>
+            <button class="tab-button" onclick="openTab(event, 'storage-tab')">Storage</button>
+            <button class="tab-button" onclick="openTab(event, 'rack-tab')">Racks</button>
+        </div>
+        
+        <form id="delete-form" method="POST" style="display: none;">
+            {% csrf_token %}
+        </form>
+        
+        <!-- CPU Tab -->
+        <div id="cpu-tab" class="tab-content active">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="component-title">CPUs</h2>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Cores</th>
+                                <th>Threads</th>
+                                <th>Base Clock (GHz)</th>
+                                <th>Wattage</th>
+                                <th>Price ($)</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cpu in cpus %}
+                            <tr {% if edit_mode and edit_id == cpu.id|stringformat:"i" and component_type == 'cpu' %}class="editing"{% endif %}>
+                                <!-- If we're editing this CPU, show the form -->
+                                {% if edit_mode and edit_id == cpu.id|stringformat:"i" and component_type == 'cpu' %}
+                                    <form method="post" action="{% url 'edit_cpu' cpu.id %}">
+                                        {% csrf_token %}
+                                        <td>{{ cpu_form.model }}</td>
+                                        <td>{{ cpu_form.cores }}</td>
+                                        <td>{{ cpu_form.threads }}</td>
+                                        <td>{{ cpu_form.base_clock_ghz }}</td>
+                                        <td>{{ cpu_form.wattage }}</td>
+                                        <td>{{ cpu_form.price_each }}</td>
+                                        <td>{{ cpu_form.link }}</td>
+                                        <td class="actions">
+                                            <button type="submit" class="btn-save">Save</button>
+                                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                            <!-- Hidden notes field -->
+                                            <div style="display: none;">{{ cpu_form.notes }}</div>
+                                        </td>
+                                    </form>
+                                <!-- Otherwise show the normal view -->
+                                {% else %}
+                                    <td>{{ cpu.model }}</td>
+                                    <td>{{ cpu.cores }}</td>
+                                    <td>{{ cpu.threads }}</td>
+                                    <td>{{ cpu.base_clock_ghz }}</td>
+                                    <td>{{ cpu.wattage }}W</td>
+                                    <td>${{ cpu.price_each }}</td>
+                                    <td>
+                                        {% if cpu.link %}
+                                        <a href="{{ cpu.link }}" target="_blank" class="link-btn">View</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
                                     <td class="actions">
-                                        <button type="submit" class="btn-save">Save</button>
-                                        <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
-                                        <!-- Hidden notes field -->
-                                        <div style="display: none;">{{ form.notes }}</div>
+                                        <a href="{% url 'edit_cpu' cpu.id %}" class="btn-edit">Edit</a>
+                                        <button class="btn-delete" onclick="deleteCPU('{% url 'delete_cpu' cpu.id %}')">Delete</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            
+                            <!-- Add New CPU Row -->
+                            {% if not edit_mode or component_type != 'cpu' %}
+                            <tr class="add-row">
+                                <form method="post" action="{% url 'add_cpu' %}">
+                                    {% csrf_token %}
+                                    <td>{{ cpu_form.model }}</td>
+                                    <td>{{ cpu_form.cores }}</td>
+                                    <td>{{ cpu_form.threads }}</td>
+                                    <td>{{ cpu_form.base_clock_ghz }}</td>
+                                    <td>{{ cpu_form.wattage }}</td>
+                                    <td>{{ cpu_form.price_each }}</td>
+                                    <td>{{ cpu_form.link }}</td>
+                                    <td>
+                                        <button type="submit" class="btn-add">Add</button>
+                                    </td>
+                                    <!-- Hidden notes field -->
+                                    <td style="display: none;">{{ cpu_form.notes }}</td>
+                                </form>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- RAM Tab -->
+        <div id="ram-tab" class="tab-content">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="component-title">RAM</h2>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Size (GB)</th>
+                                <th>Speed (MHz)</th>
+                                <th>ECC</th>
+                                <th>Price ($)</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ram in rams %}
+                            <tr {% if edit_mode and edit_id == ram.id|stringformat:"i" and component_type == 'ram' %}class="editing"{% endif %}>
+                                <!-- If we're editing this RAM, show the form -->
+                                {% if edit_mode and edit_id == ram.id|stringformat:"i" and component_type == 'ram' %}
+                                    <form method="post" action="{% url 'edit_ram' ram.id %}">
+                                        {% csrf_token %}
+                                        <td>{{ ram_form.size_gb }}</td>
+                                        <td>{{ ram_form.speed_mhz }}</td>
+                                        <td>{{ ram_form.ecc }}</td>
+                                        <td>{{ ram_form.price_each }}</td>
+                                        <td>{{ ram_form.link }}</td>
+                                        <td class="actions">
+                                            <button type="submit" class="btn-save">Save</button>
+                                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                        </td>
+                                    </form>
+                                <!-- Otherwise show the normal view -->
+                                {% else %}
+                                    <td>{{ ram.size_gb }}</td>
+                                    <td>{{ ram.speed_mhz }}</td>
+                                    <td>{% if ram.ecc %}Yes{% else %}No{% endif %}</td>
+                                    <td>${{ ram.price_each }}</td>
+                                    <td>
+                                        {% if ram.link %}
+                                        <a href="{{ ram.link }}" target="_blank" class="link-btn">View</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{% url 'edit_ram' ram.id %}" class="btn-edit">Edit</a>
+                                        <button class="btn-delete" onclick="deleteComponent('{% url 'delete_ram' ram.id %}')">Delete</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            
+                            <!-- Add New RAM Row -->
+                            {% if not edit_mode or component_type != 'ram' %}
+                            <tr class="add-row">
+                                <form method="post" action="{% url 'add_ram' %}">
+                                    {% csrf_token %}
+                                    <td>{{ ram_form.size_gb }}</td>
+                                    <td>{{ ram_form.speed_mhz }}</td>
+                                    <td>{{ ram_form.ecc }}</td>
+                                    <td>{{ ram_form.price_each }}</td>
+                                    <td>{{ ram_form.link }}</td>
+                                    <td>
+                                        <button type="submit" class="btn-add">Add</button>
                                     </td>
                                 </form>
-                            <!-- Otherwise show the normal view -->
-                            {% else %}
-                                <td>{{ cpu.model }}</td>
-                                <td>{{ cpu.cores }}</td>
-                                <td>{{ cpu.threads }}</td>
-                                <td>{{ cpu.base_clock_ghz }}</td>
-                                <td>{{ cpu.wattage }}W</td>
-                                <td>${{ cpu.price_each }}</td>
-                                <td>
-                                    {% if cpu.link %}
-                                    <a href="{{ cpu.link }}" target="_blank" class="link-btn">View</a>
-                                    {% else %}
-                                    -
-                                    {% endif %}
-                                </td>
-                                <td class="actions">
-                                    <a href="{% url 'edit_cpu' cpu.id %}" class="btn-edit">Edit</a>
-                                    <button class="btn-delete" onclick="deleteCPU('{% url 'delete_cpu' cpu.id %}')">Delete</button>
-                                </td>
+                            </tr>
                             {% endif %}
-                        </tr>
-                        {% endfor %}
-                        
-                        <!-- Add New CPU Row -->
-                        {% if not edit_mode %}
-                        <tr class="add-row">
-                            <form method="post" action="{% url 'add_cpu' %}">
-                                {% csrf_token %}
-                                <td>{{ form.model }}</td>
-                                <td>{{ form.cores }}</td>
-                                <td>{{ form.threads }}</td>
-                                <td>{{ form.base_clock_ghz }}</td>
-                                <td>{{ form.wattage }}</td>
-                                <td>{{ form.price_each }}</td>
-                                <td>{{ form.link }}</td>
-                                <td>
-                                    <button type="submit" class="btn-add">Add</button>
-                                </td>
-                                <!-- Hidden notes field -->
-                                <td style="display: none;">{{ form.notes }}</td>
-                            </form>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Motherboard Tab -->
+        <div id="motherboard-tab" class="tab-content">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="component-title">Motherboards</h2>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Socket</th>
+                                <th>Form Factor</th>
+                                <th>Price ($)</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for motherboard in motherboards %}
+                            <tr {% if edit_mode and edit_id == motherboard.id|stringformat:"i" and component_type == 'motherboard' %}class="editing"{% endif %}>
+                                <!-- If we're editing this motherboard, show the form -->
+                                {% if edit_mode and edit_id == motherboard.id|stringformat:"i" and component_type == 'motherboard' %}
+                                    <form method="post" action="{% url 'edit_motherboard' motherboard.id %}">
+                                        {% csrf_token %}
+                                        <td>{{ motherboard_form.model }}</td>
+                                        <td>{{ motherboard_form.socket }}</td>
+                                        <td>{{ motherboard_form.form_factor }}</td>
+                                        <td>{{ motherboard_form.price_each }}</td>
+                                        <td>{{ motherboard_form.link }}</td>
+                                        <td class="actions">
+                                            <button type="submit" class="btn-save">Save</button>
+                                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                        </td>
+                                    </form>
+                                <!-- Otherwise show the normal view -->
+                                {% else %}
+                                    <td>{{ motherboard.model }}</td>
+                                    <td>{{ motherboard.socket }}</td>
+                                    <td>{{ motherboard.form_factor }}</td>
+                                    <td>${{ motherboard.price_each }}</td>
+                                    <td>
+                                        {% if motherboard.link %}
+                                        <a href="{{ motherboard.link }}" target="_blank" class="link-btn">View</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{% url 'edit_motherboard' motherboard.id %}" class="btn-edit">Edit</a>
+                                        <button class="btn-delete" onclick="deleteComponent('{% url 'delete_motherboard' motherboard.id %}')">Delete</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            
+                            <!-- Add New Motherboard Row -->
+                            {% if not edit_mode or component_type != 'motherboard' %}
+                            <tr class="add-row">
+                                <form method="post" action="{% url 'add_motherboard' %}">
+                                    {% csrf_token %}
+                                    <td>{{ motherboard_form.model }}</td>
+                                    <td>{{ motherboard_form.socket }}</td>
+                                    <td>{{ motherboard_form.form_factor }}</td>
+                                    <td>{{ motherboard_form.price_each }}</td>
+                                    <td>{{ motherboard_form.link }}</td>
+                                    <td>
+                                        <button type="submit" class="btn-add">Add</button>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- NIC Tab -->
+        <div id="nic-tab" class="tab-content">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="component-title">NICs</h2>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Speed (Gbps)</th>
+                                <th>Ports</th>
+                                <th>Interface</th>
+                                <th>Price ($)</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for nic in nics %}
+                            <tr {% if edit_mode and edit_id == nic.id|stringformat:"i" and component_type == 'nic' %}class="editing"{% endif %}>
+                                <!-- If we're editing this NIC, show the form -->
+                                {% if edit_mode and edit_id == nic.id|stringformat:"i" and component_type == 'nic' %}
+                                    <form method="post" action="{% url 'edit_nic' nic.id %}">
+                                        {% csrf_token %}
+                                        <td>{{ nic_form.model }}</td>
+                                        <td>{{ nic_form.speed_gbps }}</td>
+                                        <td>{{ nic_form.port_count }}</td>
+                                        <td>{{ nic_form.interface_type }}</td>
+                                        <td>{{ nic_form.price_each }}</td>
+                                        <td>{{ nic_form.link }}</td>
+                                        <td class="actions">
+                                            <button type="submit" class="btn-save">Save</button>
+                                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                        </td>
+                                    </form>
+                                <!-- Otherwise show the normal view -->
+                                {% else %}
+                                    <td>{{ nic.model }}</td>
+                                    <td>{{ nic.speed_gbps }}</td>
+                                    <td>{{ nic.port_count }}</td>
+                                    <td>{{ nic.interface_type }}</td>
+                                    <td>${{ nic.price_each }}</td>
+                                    <td>
+                                        {% if nic.link %}
+                                        <a href="{{ nic.link }}" target="_blank" class="link-btn">View</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{% url 'edit_nic' nic.id %}" class="btn-edit">Edit</a>
+                                        <button class="btn-delete" onclick="deleteComponent('{% url 'delete_nic' nic.id %}')">Delete</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            
+                            <!-- Add New NIC Row -->
+                            {% if not edit_mode or component_type != 'nic' %}
+                            <tr class="add-row">
+                                <form method="post" action="{% url 'add_nic' %}">
+                                    {% csrf_token %}
+                                    <td>{{ nic_form.model }}</td>
+                                    <td>{{ nic_form.speed_gbps }}</td>
+                                    <td>{{ nic_form.port_count }}</td>
+                                    <td>{{ nic_form.interface_type }}</td>
+                                    <td>{{ nic_form.price_each }}</td>
+                                    <td>{{ nic_form.link }}</td>
+                                    <td>
+                                        <button type="submit" class="btn-add">Add</button>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PSU Tab -->
+        <div id="psu-tab" class="tab-content">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="component-title">PSUs</h2>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Wattage</th>
+                                <th>Efficiency</th>
+                                <th>Price ($)</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for psu in psus %}
+                            <tr {% if edit_mode and edit_id == psu.id|stringformat:"i" and component_type == 'psu' %}class="editing"{% endif %}>
+                                <!-- If we're editing this PSU, show the form -->
+                                {% if edit_mode and edit_id == psu.id|stringformat:"i" and component_type == 'psu' %}
+                                    <form method="post" action="{% url 'edit_psu' psu.id %}">
+                                        {% csrf_token %}
+                                        <td>{{ psu_form.model }}</td>
+                                        <td>{{ psu_form.wattage }}</td>
+                                        <td>{{ psu_form.efficiency_rating }}</td>
+                                        <td>{{ psu_form.price_each }}</td>
+                                        <td>{{ psu_form.link }}</td>
+                                        <td class="actions">
+                                            <button type="submit" class="btn-save">Save</button>
+                                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                        </td>
+                                    </form>
+                                <!-- Otherwise show the normal view -->
+                                {% else %}
+                                    <td>{{ psu.model }}</td>
+                                    <td>{{ psu.wattage }}W</td>
+                                    <td>{{ psu.efficiency_rating }}</td>
+                                    <td>${{ psu.price_each }}</td>
+                                    <td>
+                                        {% if psu.link %}
+                                        <a href="{{ psu.link }}" target="_blank" class="link-btn">View</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{% url 'edit_psu' psu.id %}" class="btn-edit">Edit</a>
+                                        <button class="btn-delete" onclick="deleteComponent('{% url 'delete_psu' psu.id %}')">Delete</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            
+                            <!-- Add New PSU Row -->
+                            {% if not edit_mode or component_type != 'psu' %}
+                            <tr class="add-row">
+                                <form method="post" action="{% url 'add_psu' %}">
+                                    {% csrf_token %}
+                                    <td>{{ psu_form.model }}</td>
+                                    <td>{{ psu_form.wattage }}</td>
+                                    <td>{{ psu_form.efficiency_rating }}</td>
+                                    <td>{{ psu_form.price_each }}</td>
+                                    <td>{{ psu_form.link }}</td>
+                                    <td>
+                                        <button type="submit" class="btn-add">Add</button>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case Tab -->
+        <div id="case-tab" class="tab-content">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="component-title">Cases</h2>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Form Factor</th>
+                                <th>Drive Bays</th>
+                                <th>Expansion Slots</th>
+                                <th>Price ($)</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for case in cases %}
+                            <tr {% if edit_mode and edit_id == case.id|stringformat:"i" and component_type == 'case' %}class="editing"{% endif %}>
+                                <!-- If we're editing this case, show the form -->
+                                {% if edit_mode and edit_id == case.id|stringformat:"i" and component_type == 'case' %}
+                                    <form method="post" action="{% url 'edit_case' case.id %}">
+                                        {% csrf_token %}
+                                        <td>{{ case_form.model }}</td>
+                                        <td>{{ case_form.form_factor }}</td>
+                                        <td>{{ case_form.drive_bays }}</td>
+                                        <td>{{ case_form.expansion_slots }}</td>
+                                        <td>{{ case_form.price_each }}</td>
+                                        <td>{{ case_form.link }}</td>
+                                        <td class="actions">
+                                            <button type="submit" class="btn-save">Save</button>
+                                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                        </td>
+                                    </form>
+                                <!-- Otherwise show the normal view -->
+                                {% else %}
+                                    <td>{{ case.model }}</td>
+                                    <td>{{ case.form_factor }}</td>
+                                    <td>{{ case.drive_bays }}</td>
+                                    <td>{{ case.expansion_slots }}</td>
+                                    <td>${{ case.price_each }}</td>
+                                    <td>
+                                        {% if case.link %}
+                                        <a href="{{ case.link }}" target="_blank" class="link-btn">View</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{% url 'edit_case' case.id %}" class="btn-edit">Edit</a>
+                                        <button class="btn-delete" onclick="deleteComponent('{% url 'delete_case' case.id %}')">Delete</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            
+                            <!-- Add New Case Row -->
+                            {% if not edit_mode or component_type != 'case' %}
+                            <tr class="add-row">
+                                <form method="post" action="{% url 'add_case' %}">
+                                    {% csrf_token %}
+                                    <td>{{ case_form.model }}</td>
+                                    <td>{{ case_form.form_factor }}</td>
+                                    <td>{{ case_form.drive_bays }}</td>
+                                    <td>{{ case_form.expansion_slots }}</td>
+                                    <td>{{ case_form.price_each }}</td>
+                                    <td>{{ case_form.link }}</td>
+                                    <td>
+                                        <button type="submit" class="btn-add">Add</button>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storage Tab -->
+        <div id="storage-tab" class="tab-content">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="component-title">Storage</h2>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Interface</th>
+                                <th>Price ($)</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for storage in storage_devices %}
+                            <tr {% if edit_mode and edit_id == storage.id|stringformat:"i" and component_type == 'storage' %}class="editing"{% endif %}>
+                                <!-- If we're editing this storage, show the form -->
+                                {% if edit_mode and edit_id == storage.id|stringformat:"i" and component_type == 'storage' %}
+                                    <form method="post" action="{% url 'edit_storage' storage.id %}">
+                                        {% csrf_token %}
+                                        <td>{{ storage_form.model }}</td>
+                                        <td>{{ storage_form.type }}</td>
+                                        <td>{{ storage_form.capacity_gb }}</td>
+                                        <td>{{ storage_form.interface }}</td>
+                                        <td>{{ storage_form.price_each }}</td>
+                                        <td>{{ storage_form.link }}</td>
+                                        <td class="actions">
+                                            <button type="submit" class="btn-save">Save</button>
+                                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                        </td>
+                                    </form>
+                                <!-- Otherwise show the normal view -->
+                                {% else %}
+                                    <td>{{ storage.model }}</td>
+                                    <td>{{ storage.type }}</td>
+                                    <td>{{ storage.capacity_gb }} GB</td>
+                                    <td>{{ storage.interface }}</td>
+                                    <td>${{ storage.price_each }}</td>
+                                    <td>
+                                        {% if storage.link %}
+                                        <a href="{{ storage.link }}" target="_blank" class="link-btn">View</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{% url 'edit_storage' storage.id %}" class="btn-edit">Edit</a>
+                                        <button class="btn-delete" onclick="deleteComponent('{% url 'delete_storage' storage.id %}')">Delete</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            
+                            <!-- Add New Storage Row -->
+                            {% if not edit_mode or component_type != 'storage' %}
+                            <tr class="add-row">
+                                <form method="post" action="{% url 'add_storage' %}">
+                                    {% csrf_token %}
+                                    <td>{{ storage_form.model }}</td>
+                                    <td>{{ storage_form.type }}</td>
+                                    <td>{{ storage_form.capacity_gb }}</td>
+                                    <td>{{ storage_form.interface }}</td>
+                                    <td>{{ storage_form.price_each }}</td>
+                                    <td>{{ storage_form.link }}</td>
+                                    <td>
+                                        <button type="submit" class="btn-add">Add</button>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rack Tab -->
+        <div id="rack-tab" class="tab-content">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="component-title">Racks</h2>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Units</th>
+                                <th>Price ($)</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rack in racks %}
+                            <tr {% if edit_mode and edit_id == rack.id|stringformat:"i" and component_type == 'rack' %}class="editing"{% endif %}>
+                                <!-- If we're editing this rack, show the form -->
+                                {% if edit_mode and edit_id == rack.id|stringformat:"i" and component_type == 'rack' %}
+                                    <form method="post" action="{% url 'edit_rack' rack.id %}">
+                                        {% csrf_token %}
+                                        <td>{{ rack_form.name }}</td>
+                                        <td>{{ rack_form.location }}</td>
+                                        <td>{{ rack_form.units }}</td>
+                                        <td>{{ rack_form.price }}</td>
+                                        <td>{{ rack_form.link }}</td>
+                                        <td class="actions">
+                                            <button type="submit" class="btn-save">Save</button>
+                                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                        </td>
+                                    </form>
+                                <!-- Otherwise show the normal view -->
+                                {% else %}
+                                    <td>{{ rack.name }}</td>
+                                    <td>{{ rack.location }}</td>
+                                    <td>{{ rack.units }}U</td>
+                                    <td>${{ rack.price }}</td>
+                                    <td>
+                                        {% if rack.link %}
+                                        <a href="{{ rack.link }}" target="_blank" class="link-btn">View</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{% url 'edit_rack' rack.id %}" class="btn-edit">Edit</a>
+                                        <button class="btn-delete" onclick="deleteComponent('{% url 'delete_rack' rack.id %}')">Delete</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            
+                            <!-- Add New Rack Row -->
+                            {% if not edit_mode or component_type != 'rack' %}
+                            <tr class="add-row">
+                                <form method="post" action="{% url 'add_rack' %}">
+                                    {% csrf_token %}
+                                    <td>{{ rack_form.name }}</td>
+                                    <td>{{ rack_form.location }}</td>
+                                    <td>{{ rack_form.units }}</td>
+                                    <td>{{ rack_form.price }}</td>
+                                    <td>{{ rack_form.link }}</td>
+                                    <td>
+                                        <button type="submit" class="btn-add">Add</button>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+    
+    <script>
+        function openTab(evt, tabName) {
+            // Hide all tab content
+            var tabContent = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContent.length; i++) {
+                tabContent[i].classList.remove("active");
+            }
+            
+            // Remove active class from all tab buttons
+            var tabButtons = document.getElementsByClassName("tab-button");
+            for (var i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove("active");
+            }
+            
+            // Show the selected tab and add active class to the button
+            document.getElementById(tabName).classList.add("active");
+            
+            // If evt is an Event object (from button click), update the class
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add("active");
+            } else if (evt && typeof evt === 'string') {
+                // If evt is a string (tab name), find the button and update class
+                let buttons = document.getElementsByClassName("tab-button");
+                for (let button of buttons) {
+                    if (button.getAttribute("onclick").includes(tabName)) {
+                        button.classList.add("active");
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Function to handle delete with confirmation
+        function deleteCPU(url) {
+            if (confirm('Are you sure you want to delete this component?')) {
+                const form = document.getElementById('delete-form');
+                form.action = url;
+                form.submit();
+            }
+        }
+        
+        // Use the same function for all component types
+        function deleteComponent(url) {
+            deleteCPU(url);
+        }
+        
+        // Check for tab parameter in URL when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const tabParam = params.get('tab');
+            if (tabParam) {
+                openTab(tabParam, tabParam);
+            }
+        });
+    </script>
 {% endblock %}
