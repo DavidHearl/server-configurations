@@ -1,43 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load dict_extras %}
 
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/components.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Add New Components</h2>
-<div style="display: flex; flex-wrap: wrap; gap: 2em;">
-    <form method="post" style="flex:1; min-width:300px;">{% csrf_token %}
-        <h4>CPU</h4>
-        {{ cpu_form.as_p }}
-        <button type="submit" name="cpu-submit">Add CPU</button>
-    </form>
-    <form method="post" style="flex:1; min-width:300px;">{% csrf_token %}
-        <h4>RAM</h4>
-        {{ ram_form.as_p }}
-        <button type="submit" name="ram-submit">Add RAM</button>
-    </form>
-    <form method="post" style="flex:1; min-width:300px;">{% csrf_token %}
-        <h4>Motherboard</h4>
-        {{ motherboard_form.as_p }}
-        <button type="submit" name="mb-submit">Add Motherboard</button>
-    </form>
-    <form method="post" style="flex:1; min-width:300px;">{% csrf_token %}
-        <h4>NIC</h4>
-        {{ nic_form.as_p }}
-        <button type="submit" name="nic-submit">Add NIC</button>
-    </form>
-    <form method="post" style="flex:1; min-width:300px;">{% csrf_token %}
-        <h4>PSU</h4>
-        {{ psu_form.as_p }}
-        <button type="submit" name="psu-submit">Add PSU</button>
-    </form>
-    <form method="post" style="flex:1; min-width:300px;">{% csrf_token %}
-        <h4>Case</h4>
-        {{ case_form.as_p }}
-        <button type="submit" name="case-submit">Add Case</button>
-    </form>
-    <form method="post" style="flex:1; min-width:300px;">{% csrf_token %}
-        <h4>Rack</h4>
-        {{ rack_form.as_p }}
-        <button type="submit" name="rack-submit">Add Rack</button>
-    </form>
-</div>
+
 {% endblock %}

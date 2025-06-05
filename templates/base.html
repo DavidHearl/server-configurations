@@ -2,10 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}My Django App{% endblock %}</title>
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+    
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/navigation.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    {% block extra_css %}
+    {% endblock %}    
 
 </head>
 <body>
