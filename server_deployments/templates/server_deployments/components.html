@@ -1,11 +1,102 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load dict_extras %}
+
+{% block title %}Components{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/components.css' %}">
 {% endblock %}
 
 {% block content %}
-
+    <div class="container">
+        <h1 class="page-title">CPU Components</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <form id="delete-form" method="POST" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                
+                <table class="component-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Cores</th>
+                            <th>Threads</th>
+                            <th>Base Clock (GHz)</th>
+                            <th>Wattage</th>
+                            <th>Price ($)</th>
+                            <th>Link</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cpu in cpus %}
+                        <tr {% if edit_mode and edit_id == cpu.id|stringformat:"i" %}class="editing"{% endif %}>
+                            <!-- If we're editing this CPU, show the form -->
+                            {% if edit_mode and edit_id == cpu.id|stringformat:"i" %}
+                                <form method="post" action="{% url 'edit_cpu' cpu.id %}">
+                                    {% csrf_token %}
+                                    <td>{{ form.model }}</td>
+                                    <td>{{ form.cores }}</td>
+                                    <td>{{ form.threads }}</td>
+                                    <td>{{ form.base_clock_ghz }}</td>
+                                    <td>{{ form.wattage }}</td>
+                                    <td>{{ form.price_each }}</td>
+                                    <td>{{ form.link }}</td>
+                                    <td class="actions">
+                                        <button type="submit" class="btn-save">Save</button>
+                                        <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                        <!-- Hidden notes field -->
+                                        <div style="display: none;">{{ form.notes }}</div>
+                                    </td>
+                                </form>
+                            <!-- Otherwise show the normal view -->
+                            {% else %}
+                                <td>{{ cpu.model }}</td>
+                                <td>{{ cpu.cores }}</td>
+                                <td>{{ cpu.threads }}</td>
+                                <td>{{ cpu.base_clock_ghz }}</td>
+                                <td>{{ cpu.wattage }}W</td>
+                                <td>${{ cpu.price_each }}</td>
+                                <td>
+                                    {% if cpu.link %}
+                                    <a href="{{ cpu.link }}" target="_blank" class="link-btn">View</a>
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td class="actions">
+                                    <a href="{% url 'edit_cpu' cpu.id %}" class="btn-edit">Edit</a>
+                                    <button class="btn-delete" onclick="deleteCPU('{% url 'delete_cpu' cpu.id %}')">Delete</button>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                        
+                        <!-- Add New CPU Row -->
+                        {% if not edit_mode %}
+                        <tr class="add-row">
+                            <form method="post" action="{% url 'add_cpu' %}">
+                                {% csrf_token %}
+                                <td>{{ form.model }}</td>
+                                <td>{{ form.cores }}</td>
+                                <td>{{ form.threads }}</td>
+                                <td>{{ form.base_clock_ghz }}</td>
+                                <td>{{ form.wattage }}</td>
+                                <td>{{ form.price_each }}</td>
+                                <td>{{ form.link }}</td>
+                                <td>
+                                    <button type="submit" class="btn-add">Add</button>
+                                </td>
+                                <!-- Hidden notes field -->
+                                <td style="display: none;">{{ form.notes }}</td>
+                            </form>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
