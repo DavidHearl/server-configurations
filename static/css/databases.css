@@ -1,0 +1,56 @@
+.database-container {
+  max-width: 1800px;
+  margin: 1em auto;
+  padding: 1em;
+  padding-top: 0;
+  font-family: sans-serif;
+}
+
+.filter-form {
+  margin-bottom: 1em;
+}
+
+.subfolder-filters {
+  margin: 1em 0;
+}
+
+.subfolder-filters a {
+  margin-right: 10px;
+  text-decoration: none;
+  background: #eee;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.folder-entry {
+  margin-bottom: 1em;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1em;
+  background: #f9f9f9;
+  cursor: pointer;
+}
+
+.folder-meta {
+  font-size: 0.9em;
+  color: #555;
+  margin-left: 10px;
+}
+
+.file-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+
+.file-table th,
+.file-table td {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 2em;
+}

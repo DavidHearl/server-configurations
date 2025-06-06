@@ -3,8 +3,9 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('components/', views.components, name='components'),  # Added trailing slash
-    path('components', views.components, name='components_no_slash'),  # Also match without slash
+    path('systems/', views.systems, name='systems'),
+    path('components/', views.components, name='components'), 
+    path('databases/', views.databases, name='databases'),
     
     # CPU routes
     path('components/add-cpu/', views.add_cpu, name='add_cpu'),
@@ -55,7 +56,4 @@ urlpatterns = [
     path('components/add-rack/', views.add_rack, name='add_rack'),
     path('components/edit-rack/<int:rack_id>/', views.edit_rack, name='edit_rack'),
     path('components/delete-rack/<int:rack_id>/', views.delete_rack, name='delete_rack'),
-    
-    path('databases/', views.databases, name='databases'),  # Added trailing slash
-    path('databases', views.databases, name='databases_no_slash'),  # Also match without slash
 ]

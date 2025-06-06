@@ -1,9 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from .forms import *
+from django.utils.timezone import now
+from django.core.paginator import Paginator
+from datetime import timedelta
+from django.db.models import Q, Count, Sum
+from django.utils.timezone import now
+import os
 
 
 def home(request):
+    return render(request, 'server_deployments/home.html')
+
+def systems(request):
     return render(request, 'server_deployments/home.html')
 
 
@@ -340,5 +349,24 @@ def delete_rack(request, rack_id):
 
 
 def databases(request):
-    return render(request, 'server_deployments/databases.html')
+    base_path = request.GET.get("base_path", "/mnt")
+    folders = IndexedFolder.objects.filter(path__startswith=base_path).order_by("path")
 
+    paginator = Paginator(folders, 250)
+    page = request.GET.get("page", 1)
+    paginated_folders = paginator.get_page(page)
+
+    # Derive next subfolder options from current base_path
+    subfolders = set()
+    base_depth = len(base_path.strip("/").split("/"))
+    for f in folders:
+        parts = f.path.strip("/").split("/")
+        if len(parts) > base_depth:
+            subfolders.add(parts[base_depth])
+
+    return render(request, "server_deployments/databases.html", {
+        "folders": paginated_folders,
+        "base_path": base_path,
+        "subfolders": sorted(subfolders),
+        "now": now(),
+    })

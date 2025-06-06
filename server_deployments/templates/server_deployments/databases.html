@@ -1,4 +1,74 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/databases.css' %}">
+{% endblock %}
 
 {% block content %}
+<div class="database-container">
+  <h2>Indexed Folders</h2>
+
+  <form method="get" class="filter-form">
+    <label>Base Folder:</label>
+    <input type="text" name="base_path" value="{{ base_path }}">
+    <button type="submit">Filter</button>
+  </form>
+
+  {% if subfolders %}
+  <div class="subfolder-filters">
+    <span>Next level:</span>
+    {% for sub in subfolders %}
+      <a href="?base_path={{ base_path }}/{{ sub }}">{{ sub }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% for folder in folders %}
+  <div class="folder-entry">
+    <details>
+      <summary>
+        <strong>{{ folder.path }}</strong>
+        <span class="folder-meta">
+          {{ folder.total_size|filesizeformat }} —
+          Last scanned: 
+          {% with delta=now|timesince:folder.last_scanned %}
+            {% if "minute" in delta %}< 1 hour
+            {% else %}{{ delta }} ago
+            {% endif %}
+          {% endwith %}
+        </span>
+      </summary>
+      <table class="file-table">
+        <thead>
+          <tr><th>Name</th><th>Size</th><th>Type</th><th>Path</th></tr>
+        </thead>
+        <tbody>
+          {% for file in folder.files.all %}
+          <tr>
+            <td>{{ file.filename }}</td>
+            <td>{{ file.file_size|filesizeformat }}</td>
+            <td>{{ file.file_type }}</td>
+            <td>{{ file.full_path }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+  </div>
+  {% endfor %}
+
+  <div class="pagination">
+    {% if folders.has_previous %}
+      <a href="?base_path={{ base_path }}&page={{ folders.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>Page {{ folders.number }} of {{ folders.paginator.num_pages }}</span>
+
+    {% if folders.has_next %}
+      <a href="?base_path={{ base_path }}&page={{ folders.next_page_number }}">Next</a>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
