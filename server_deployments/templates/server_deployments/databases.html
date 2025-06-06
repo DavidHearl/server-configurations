@@ -2,6 +2,8 @@
 {% load humanize %}
 {% load static %}
 
+{% block title %}Database Explorer{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/databases.css' %}">
 {% endblock %}
@@ -20,44 +22,72 @@
   <div class="subfolder-filters">
     <span>Next level:</span>
     {% for sub in subfolders %}
-      <a href="?base_path={{ base_path }}/{{ sub }}">{{ sub }}</a>
+      {% if forloop.counter <= 10 %}
+        <a href="?base_path={{ base_path }}/{{ sub }}">{{ sub }}</a>
+      {% else %}
+        <a href="?base_path={{ base_path }}/{{ sub }}" class="hidden-subfolder">{{ sub }}</a>
+      {% endif %}
     {% endfor %}
+    {% if subfolders|length > 10 %}
+      <a href="#" class="show-more-btn" id="show-more-btn">Show All ({{ subfolders|length }})</a>
+    {% endif %}
   </div>
   {% endif %}
 
-  {% for folder in folders %}
-  <div class="folder-entry">
-    <details>
-      <summary>
-        <strong>{{ folder.path }}</strong>
-        <span class="folder-meta">
-          {{ folder.total_size|filesizeformat }} —
-          Last scanned: 
+  <table class="folder-table">
+    <thead>
+      <tr>
+        <th class="path-cell">Folder Path</th>
+        <th class="count-cell">Files</th>
+        <th class="size-cell">Size</th>
+        <th class="date-cell">Last Scanned</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for folder in folders %}
+      <tr class="folder-row expandable-row" data-folder-id="{{ folder.id }}">
+        <td class="path-cell">
+          <span class="folder-path">{{ folder.path }}</span>
+        </td>
+        <td class="count-cell">{{ folder.files.count }}</td>
+        <td class="size-cell">{{ folder.total_size|filesizeformat }}</td>
+        <td class="date-cell">
           {% with delta=now|timesince:folder.last_scanned %}
             {% if "minute" in delta %}< 1 hour
             {% else %}{{ delta }} ago
             {% endif %}
           {% endwith %}
-        </span>
-      </summary>
-      <table class="file-table">
-        <thead>
-          <tr><th>Name</th><th>Size</th><th>Type</th><th>Path</th></tr>
-        </thead>
-        <tbody>
-          {% for file in folder.files.all %}
-          <tr>
-            <td>{{ file.filename }}</td>
-            <td>{{ file.file_size|filesizeformat }}</td>
-            <td>{{ file.file_type }}</td>
-            <td>{{ file.full_path }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </details>
-  </div>
-  {% endfor %}
+        </td>
+      </tr>
+      <tr class="file-details-row" id="files-{{ folder.id }}">
+        <td colspan="4">
+          <div class="file-details-container">
+            <table class="file-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Type</th>
+                  <th>Path</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for file in folder.files.all %}
+                <tr>
+                  <td>{{ file.filename }}</td>
+                  <td>{{ file.file_size|filesizeformat }}</td>
+                  <td>{{ file.file_type }}</td>
+                  <td>{{ file.full_path }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
   <div class="pagination">
     {% if folders.has_previous %}
@@ -71,4 +101,36 @@
     {% endif %}
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle folder row clicks for expanding/collapsing file details
+    const folderRows = document.querySelectorAll('.folder-row');
+    folderRows.forEach(row => {
+      row.addEventListener('click', function() {
+        const folderId = this.getAttribute('data-folder-id');
+        const fileRow = document.getElementById(`files-${folderId}`);
+        
+        if (fileRow.style.display === 'table-row') {
+          fileRow.style.display = 'none';
+        } else {
+          fileRow.style.display = 'table-row';
+        }
+      });
+    });
+
+    // Show more subfolders
+    const showMoreBtn = document.getElementById('show-more-btn');
+    if (showMoreBtn) {
+      showMoreBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const hiddenSubfolders = document.querySelectorAll('.hidden-subfolder');
+        hiddenSubfolders.forEach(subfolder => {
+          subfolder.style.display = 'inline-block';
+        });
+        showMoreBtn.style.display = 'none';
+      });
+    }
+  });
+</script>
 {% endblock %}
