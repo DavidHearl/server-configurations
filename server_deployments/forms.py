@@ -21,6 +21,11 @@ class NICForm(forms.ModelForm):
         model = NIC
         fields = '__all__'
 
+class GPUForm(forms.ModelForm):
+    class Meta:
+        model = GPU
+        fields = '__all__'
+
 class PSUForm(forms.ModelForm):
     class Meta:
         model = PSU

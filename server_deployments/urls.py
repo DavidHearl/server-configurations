@@ -41,6 +41,11 @@ urlpatterns = [
     path('components/edit-storage/<int:storage_id>/', views.edit_storage, name='edit_storage'),
     path('components/delete-storage/<int:storage_id>/', views.delete_storage, name='delete_storage'),
 
+    # GPU routes
+    path('components/add-gpu/', views.add_gpu, name='add_gpu'),
+    path('components/edit-gpu/<int:gpu_id>/', views.edit_gpu, name='edit_gpu'),
+    path('components/delete-gpu/<int:gpu_id>/', views.delete_gpu, name='delete_gpu'),
+
     # HBA routes
     path('components/add-hba/', views.add_hba, name='add_hba'),
     path('components/edit-hba/<int:hba_id>/', views.edit_hba, name='edit_hba'),

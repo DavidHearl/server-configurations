@@ -17,6 +17,7 @@ def components(request):
     psus = PSU.objects.all()
     cases = Case.objects.all()
     storage_devices = StorageDevice.objects.all()
+    gpus = GPU.objects.all()
     hba_devices = HBA.objects.all()
     racks = Rack.objects.all()
     
@@ -28,6 +29,7 @@ def components(request):
     psu_form = PSUForm()
     case_form = CaseForm()
     storage_form = StorageDeviceForm()
+    gpu_form = GPUForm()
     hba_form = HBAForm()
     rack_form = RackForm()
     
@@ -77,6 +79,7 @@ def components(request):
         'psus': psus,
         'cases': cases,
         'storage_devices': storage_devices,
+        'gpus': gpus,
         'hba_devices': hba_devices,
         'racks': racks,
         
@@ -88,6 +91,7 @@ def components(request):
         'psu_form': psu_form,
         'case_form': case_form,
         'storage_form': storage_form,
+        'gpu_form': gpu_form,
         'hba_form': hba_form,
         'rack_form': rack_form,
         
@@ -284,6 +288,30 @@ def delete_hba(request, hba_id):
     hba = get_object_or_404(HBA, id=hba_id)
     if request.method == 'POST':
         hba.delete()
+    return redirect('components')
+
+
+# GPU CRUD operations
+def add_gpu(request):
+    if request.method == 'POST':
+        form = GPUForm(request.POST)
+        if form.is_valid():
+            form.save()
+    return redirect('components')
+
+def edit_gpu(request, gpu_id):
+    gpu = get_object_or_404(GPU, id=gpu_id)
+    if request.method == 'POST':
+        form = GPUForm(request.POST, instance=gpu)
+        if form.is_valid():
+            form.save()
+            return redirect('components')
+    return redirect(f'/components/?edit={gpu_id}&type=gpu&tab=gpu-tab')
+
+def delete_gpu(request, gpu_id):
+    gpu = get_object_or_404(GPU, id=gpu_id)
+    if request.method == 'POST':
+        gpu.delete()
     return redirect('components')
 
 

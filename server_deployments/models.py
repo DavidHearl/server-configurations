@@ -64,6 +64,19 @@ class PSU(models.Model):
         return f"{self.model} {self.wattage}W {self.efficiency_rating}"
     
 
+class GPU(models.Model):
+    model = models.CharField(max_length=255)
+    cores = models.PositiveIntegerField()
+    vram = models.PositiveIntegerField()
+    vram_type = models.CharField(max_length=64)
+    bus_width = models.PositiveIntegerField()
+    link = models.URLField(blank=True, null=True)
+    owned = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.model} ({self.vram_gb}GB VRAM, {self.chipset})"
+
+
 class HBA(models.Model):
     model = models.CharField(max_length=255)
     internal_connectors = models.IntegerField()
@@ -129,49 +142,3 @@ class System(models.Model):
     def __str__(self):
         return f"{self.location} - {self.name}"
     
-
-class MovieIndex(models.Model):
-    system = models.ForeignKey('System', on_delete=models.CASCADE, related_name='movie_indexes')
-    name = models.CharField(max_length=255)  # e.g., 'Inception'
-    path = models.TextField(unique=True)
-    file_count = models.IntegerField()
-    folder_size_bytes = models.BigIntegerField()
-    last_scanned = models.DateTimeField(default=now)
-
-    def __str__(self):
-        return self.name
-
-
-class TVShowIndex(models.Model):
-    system = models.ForeignKey('System', on_delete=models.CASCADE, related_name='tv_show_indexes')
-    name = models.CharField(max_length=255)  # e.g., 'Breaking Bad'
-    path = models.TextField(unique=True)
-    season_count = models.IntegerField()
-    total_size_bytes = models.BigIntegerField()
-    last_scanned = models.DateTimeField(default=now)
-
-    def __str__(self):
-        return self.name
-
-class SeasonIndex(models.Model):
-    tv_show = models.ForeignKey(TVShowIndex, on_delete=models.CASCADE, related_name='seasons')
-    name = models.CharField(max_length=255)         # e.g., 'Season 1'
-    path = models.TextField(unique=True)
-    file_count = models.IntegerField()
-    folder_size_bytes = models.BigIntegerField()
-
-    def __str__(self):
-        return f"{self.tv_show.name} - {self.name}"
-
-
-class MediaFile(models.Model):
-    path = models.TextField(unique=True)
-    name = models.CharField(max_length=255)
-    extension = models.CharField(max_length=10)
-    size_bytes = models.BigIntegerField()
-
-    movie = models.ForeignKey('MovieIndex', on_delete=models.CASCADE, null=True, blank=True, related_name='files')
-    season = models.ForeignKey('SeasonIndex', on_delete=models.CASCADE, null=True, blank=True, related_name='files')
-
-    def __str__(self):
-        return self.name

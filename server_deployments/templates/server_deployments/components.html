@@ -19,6 +19,7 @@
             <button class="tab-button" onclick="openTab(event, 'psu-tab')">PSUs</button>
             <button class="tab-button" onclick="openTab(event, 'case-tab')">Cases</button>
             <button class="tab-button" onclick="openTab(event, 'storage-tab')">Storage</button>
+            <button class="tab-button" onclick="openTab(event, 'gpu-tab')">GPUs</button>
             <button class="tab-button" onclick="openTab(event, 'hba-tab')">HBAs</button>
             <button class="tab-button" onclick="openTab(event, 'rack-tab')">Racks</button>
         </div>
@@ -515,6 +516,87 @@
                                     <td>{{ case_form.price_each }}</td>
                                     <td>{{ case_form.owned }}</td>
                                     <td>{{ case_form.link }}</td>
+                                    <td>
+                                        <button type="submit" class="btn-add">Add</button>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPU Tab -->
+        <div id="gpu-tab" class="tab-content">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="component-title">GPUs</h2>
+                    <table class="component-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Cores</th>
+                                <th>VRAM (MB)</th>
+                                <th>VRAM Type</th>
+                                <th>Bus Width (bit)</th>
+                                <th>Owned</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for gpu in gpus %}
+                            <tr {% if edit_mode and edit_id == gpu.id|stringformat:"i" and component_type == 'gpu' %}class="editing"{% endif %}>
+                                {% if edit_mode and edit_id == gpu.id|stringformat:"i" and component_type == 'gpu' %}
+                                    <form method="post" action="{% url 'edit_gpu' gpu.id %}">
+                                        {% csrf_token %}
+                                        <td>{{ gpu_form.model }}</td>
+                                        <td>{{ gpu_form.cores }}</td>
+                                        <td>{{ gpu_form.vram }}</td>
+                                        <td>{{ gpu_form.vram_type }}</td>
+                                        <td>{{ gpu_form.bus_width }}</td>
+                                        <td>{{ gpu_form.owned }}</td>
+                                        <td>{{ gpu_form.link }}</td>
+                                        <td class="actions">
+                                            <button type="submit" class="btn-save">Save</button>
+                                            <a href="{% url 'components' %}" class="btn-cancel">Cancel</a>
+                                        </td>
+                                    </form>
+                                {% else %}
+                                    <td>{{ gpu.model }}</td>
+                                    <td>{{ gpu.cores }}</td>
+                                    <td>{{ gpu.vram }}</td>
+                                    <td>{{ gpu.vram_type }}</td>
+                                    <td>{{ gpu.bus_width }}</td>
+                                    <td>{{ gpu.owned }}</td>
+                                    <td>
+                                        {% if gpu.link %}
+                                        <a href="{{ gpu.link }}" target="_blank" class="link-btn">View</a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{% url 'edit_gpu' gpu.id %}" class="btn-edit">Edit</a>
+                                        <button class="btn-delete" onclick="deleteComponent('{% url 'delete_gpu' gpu.id %}')">Delete</button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            
+                            {% if not edit_mode or component_type != 'gpu' %}
+                            <tr class="add-row">
+                                <form method="post" action="{% url 'add_gpu' %}">
+                                    {% csrf_token %}
+                                    <td>{{ gpu_form.model }}</td>
+                                    <td>{{ gpu_form.cores }}</td>
+                                    <td>{{ gpu_form.vram }}</td>
+                                    <td>{{ gpu_form.vram_type }}</td>
+                                    <td>{{ gpu_form.bus_width }}</td>
+                                    <td>{{ gpu_form.owned }}</td>
+                                    <td>{{ gpu_form.link }}</td>
                                     <td>
                                         <button type="submit" class="btn-add">Add</button>
                                     </td>
