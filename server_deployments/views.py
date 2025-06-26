@@ -370,3 +370,148 @@ def databases(request):
         "subfolders": sorted(subfolders),
         "now": now(),
     })
+
+
+def storage_view(request):
+    # Handle form submission
+    if request.method == 'POST':
+        # Create new storage device
+        model = request.POST.get('model')
+        serial_number = request.POST.get('serial_number')
+        storage_type = request.POST.get('storage_type')
+        capacity_tb = request.POST.get('capacity_tb')
+        rpm = request.POST.get('rpm')
+        disk_location = request.POST.get('disk_location')
+        failure = request.POST.get('failure') == 'True'
+        system_id = request.POST.get('system')
+        
+        # Create and save the storage device
+        storage = StorageDevice.objects.create(
+            model=model,
+            serial_number=serial_number,
+            storage_type=storage_type,
+            capacity_tb=float(capacity_tb) if capacity_tb else 0,
+            rpm=int(rpm) if rpm else None,
+            disk_location=int(disk_location) if disk_location else None,
+            failure=failure
+        )
+        
+        # Assign to system if specified
+        if system_id and system_id != '':
+            try:
+                system = System.objects.get(id=system_id)
+                system.storage_devices.add(storage)
+            except System.DoesNotExist:
+                pass
+                
+        return redirect('storage_view')
+    
+    # Get all systems
+    systems = System.objects.all().prefetch_related('storage_devices')
+    
+    # Create a system map with ordered drives
+    systems_with_ordered_drives = []
+    associated_storage_ids = []
+    
+    for system in systems:
+        # Get all drives for this system
+        drives = list(system.storage_devices.all())
+        
+        # Custom sorting: None disk_numbers at top, then by disk_number
+        def drive_sort_key(drive):
+            if drive.disk_location is None:
+                return (0, 0)  # Tuple for sorting: (priority, disk_number)
+            return (1, drive.disk_location)
+        
+        # Sort the drives
+        sorted_drives = sorted(drives, key=drive_sort_key)
+        
+        # Track all associated storage IDs
+        associated_storage_ids.extend([drive.id for drive in drives])
+        
+        # Add to the result list
+        systems_with_ordered_drives.append({
+            'system': system,
+            'drives': sorted_drives
+        })
+    
+    # Get drives that aren't associated with any system
+    misc_drives = StorageDevice.objects.exclude(id__in=associated_storage_ids)
+    
+    return render(request, "server_deployments/storage_view.html", {
+        "systems_with_drives": systems_with_ordered_drives,
+        "misc_drives": misc_drives,
+        "systems": systems,  # For the dropdown in the add form
+    })
+
+
+def add_storage(request):
+    system_id = request.GET.get('system')
+    
+    if request.method == 'POST':
+        form = StorageDeviceForm(request.POST)
+        if form.is_valid():
+            storage = form.save()
+            return redirect('storage_view')  # Redirect to storage view instead of components
+    else:
+        # Pre-select the system if passed in URL
+        initial_data = {}
+        if system_id:
+            try:
+                system = System.objects.get(pk=system_id)
+                initial_data = {'system': system}
+            except System.DoesNotExist:
+                pass
+                
+        form = StorageDeviceForm(initial=initial_data)
+    
+    return render(request, 'server_deployments/add_storage.html', {
+        'form': form,
+        'title': 'Add Storage Device'
+    })
+
+
+def edit_storage(request, storage_id):
+    storage = get_object_or_404(StorageDevice, id=storage_id)
+    
+    # Find the current system if any
+    current_system = None
+    for system in System.objects.all():
+        if storage in system.storage_devices.all():
+            current_system = system
+            break
+    
+    if request.method == 'POST':
+        form = StorageDeviceForm(request.POST, instance=storage)
+        if form.is_valid():
+            # Save the storage device
+            storage = form.save()
+            
+            # Handle system assignment
+            new_system_id = request.POST.get('system')
+            
+            # If the storage was in a system, remove it
+            if current_system:
+                current_system.storage_devices.remove(storage)
+            
+            # Add to new system if specified
+            if new_system_id and new_system_id != '':
+                try:
+                    new_system = System.objects.get(id=new_system_id)
+                    new_system.storage_devices.add(storage)
+                except System.DoesNotExist:
+                    pass
+            
+            # Redirect back to storage view
+            return redirect('storage_view')
+    else:
+        form = StorageDeviceForm(instance=storage)
+    
+    # Render the form
+    return render(request, 'server_deployments/edit_storage.html', {
+        'form': form,
+        'storage': storage,
+        'title': 'Edit Storage Device',
+        'systems': System.objects.all(),
+        'current_system': current_system
+    })

@@ -1,0 +1,398 @@
+.storage-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.storage-section {
+  margin-bottom: 30px;
+}
+
+.storage-section h3 {
+  color: #2c3e50;
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 8px;
+}
+
+/* Add Storage Form Styles */
+.add-storage-section {
+  margin-bottom: 16px;
+}
+
+.add-button {
+  background-color: #27ae60;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.add-button:hover {
+  background-color: #219653;
+}
+
+.storage-form-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-top: 15px;
+}
+
+.storage-form-container h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ecf0f1;
+  padding-bottom: 10px;
+}
+
+.form-row {
+  display: flex;
+  margin-bottom: 15px;
+  gap: 20px;
+}
+
+.form-group {
+  flex: 1;
+}
+
+.form-group.wide {
+  flex: 2;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.submit-btn {
+  background-color: #3498db;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: #2980b9;
+}
+
+.cancel-btn {
+  background-color: #95a5a6;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.cancel-btn:hover {
+  background-color: #7f8c8d;
+}
+
+/* System Cards */
+.system-card {
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.system-header {
+  background-color: #34495e;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.system-header:hover {
+  background-color: #2c3e50;
+}
+
+.system-header.collapsed {
+  border-radius: 6px;
+}
+
+.system-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.system-info {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+}
+
+.expand-icon {
+  font-size: 0.8rem;
+}
+
+.system-drives-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Drive Tables */
+.drives-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.drives-table th {
+  background-color: #f5f5f5;
+  color: #333;
+  text-align: left;
+  padding: 12px 15px;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+}
+
+.drives-table td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.drive-row:hover {
+  background-color: #f9f9f9;
+}
+
+.no-drives {
+  padding: 15px;
+  color: #7f8c8d;
+  text-align: center;
+  font-style: italic;
+}
+
+.actions-cell {
+  text-align: right;
+  width: 100px;
+}
+
+.edit-btn {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+.edit-btn:hover {
+  background-color: #2980b9;
+  color: white;
+  text-decoration: none;
+}
+
+/* Add mobile-friendly form styles */
+
+/* Replace the form-row style with form-grid for better responsiveness */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.submit-btn, .cancel-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
+}
+
+.submit-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.submit-btn:hover {
+  background-color: #2980b9;
+}
+
+.cancel-btn {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #7f8c8d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+  
+  .form-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .submit-btn, .cancel-btn {
+    width: 100%;
+    padding: 12px 20px;
+  }
+  
+  .add-button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+  
+  .drives-table th, .drives-table td {
+    padding: 8px 6px;
+  }
+  
+  /* Optimize tables for mobile view */
+  .drives-table {
+    font-size: 0.9rem;
+  }
+  
+  .system-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 15px;
+  }
+  
+  .system-name {
+    margin-bottom: 5px;
+  }
+  
+  .system-info {
+    font-size: 0.8rem;
+  }
+}
+
+/* Add/Edit Storage form styling */
+.form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Add to storage.css */
+.failing-drive {
+  background-color: #ffeeee;
+}
+
+.failure-badge {
+  background-color: #e74c3c;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+/* Making the form more responsive for mobile */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .form-group.full-width {
+    grid-column: span 1 !important;
+  }
+  
+  .button-row {
+    flex-direction: column;
+  }
+  
+  .button-row button, 
+  .button-row a {
+    width: 100%;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+}
+
+/* Hide less important columns on small screens */
+@media (max-width: 576px) {
+  .drives-table .small-hide {
+    display: none;
+  }
+}

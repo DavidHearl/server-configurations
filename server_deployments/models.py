@@ -105,13 +105,13 @@ class Case(models.Model):
 
 
 class StorageDevice(models.Model):
+    disk_location = models.PositiveIntegerField(null=True, blank=True)
     model = models.CharField(max_length=255)
     serial_number = models.CharField(max_length=255, null=True, blank=True)
     storage_type = models.CharField(max_length=10, choices=[('HDD', 'HDD'), ('SSD', 'SSD'), ('NVMe', 'NVMe')])
     capacity_tb = models.PositiveIntegerField()
     rpm = models.PositiveIntegerField(blank=True, null=True)
-    price_each = models.DecimalField(max_digits=10, decimal_places=2)
-    link = models.URLField(blank=True, null=True)
+    failure = models.BooleanField(default=False)
 
     def __str__(self):
         rpm_str = f", {self.rpm}RPM" if self.rpm else ""
