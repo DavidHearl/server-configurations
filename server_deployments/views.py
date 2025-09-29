@@ -379,10 +379,14 @@ def storage_view(request):
         model = request.POST.get('model')
         serial_number = request.POST.get('serial_number')
         storage_type = request.POST.get('storage_type')
+        storage_sub_type = request.POST.get('storage_sub_type')
         capacity_tb = request.POST.get('capacity_tb')
         rpm = request.POST.get('rpm')
         disk_location = request.POST.get('disk_location')
-        failure = request.POST.get('failure') == 'True'
+        utilisation = request.POST.get('utilisation', 0)
+        fragmentation = request.POST.get('fragmentation')
+        actual_fragmentation = request.POST.get('actual_fragmentation')
+        ideal_fragmentation = request.POST.get('ideal_fragmentation')
         system_id = request.POST.get('system')
         
         # Create and save the storage device
@@ -390,10 +394,14 @@ def storage_view(request):
             model=model,
             serial_number=serial_number,
             storage_type=storage_type,
+            storage_sub_type=storage_sub_type,
             capacity_tb=float(capacity_tb) if capacity_tb else 0,
             rpm=int(rpm) if rpm else None,
             disk_location=int(disk_location) if disk_location else None,
-            failure=failure
+            utilisation=float(utilisation) if utilisation else 0.0,
+            fragmentation=float(fragmentation) if fragmentation else None,
+            actual_fragmentation=int(actual_fragmentation) if actual_fragmentation else None,
+            ideal_fragmentation=int(ideal_fragmentation) if ideal_fragmentation else None
         )
         
         # Assign to system if specified

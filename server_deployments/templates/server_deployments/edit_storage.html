@@ -10,7 +10,7 @@
   <form method="post" class="form">
     {% csrf_token %}
     
-        <div class="form-grid">
+    <div class="form-grid">
         <div class="form-group">
             <label for="{{ form.model.id_for_label }}">Model:</label>
             {{ form.model }}
@@ -22,8 +22,13 @@
         </div>
 
         <div class="form-group">
-            <label for="{{ form.storage_type.id_for_label }}">Type:</label>
+            <label for="{{ form.storage_type.id_for_label }}">Storage Type:</label>
             {{ form.storage_type }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.storage_sub_type.id_for_label }}">Storage Sub Type:</label>
+            {{ form.storage_sub_type }}
         </div>
         
         <div class="form-group">
@@ -32,7 +37,7 @@
         </div>
 
         <div class="form-group">
-            <label for="{{ form.disk_location.id_for_label }}">Disk Number:</label>
+            <label for="{{ form.disk_location.id_for_label }}">Disk Location:</label>
             {{ form.disk_location }}
         </div>
         
@@ -42,29 +47,59 @@
         </div>
 
         <div class="form-group">
-            <label for="{{ form.failure.id_for_label }}">Failing Drive?</label>
+            <label for="{{ form.utilisation.id_for_label }}">Utilisation (%):</label>
+            {{ form.utilisation }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.fragmentation.id_for_label }}">Fragmentation (%):</label>
+            {{ form.fragmentation }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.actual_fragmentation.id_for_label }}">Actual Fragmentation:</label>
+            {{ form.actual_fragmentation }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.ideal_fragmentation.id_for_label }}">Ideal Fragmentation:</label>
+            {{ form.ideal_fragmentation }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.cache.id_for_label }}">Cache Drive:</label>
+            {{ form.cache }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.parity.id_for_label }}">Parity Drive:</label>
+            {{ form.parity }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.failure.id_for_label }}">Failing Drive:</label>
             {{ form.failure }}
         </div>
         
-        <div class="form-group">
+        <div class="form-group full-width">
             <label for="system">System:</label>
             <select id="system" name="system">
-            <option value="">-- None (Miscellaneous) --</option>
-            {% for sys in systems %}
-                <option value="{{ sys.id }}" {% if current_system and current_system.id == sys.id %}selected{% endif %}>
-                {{ sys.name }}
-                </option>
-            {% endfor %}
+                <option value="">-- None (Miscellaneous) --</option>
+                {% for sys in systems %}
+                    <option value="{{ sys.id }}" {% if current_system and current_system.id == sys.id %}selected{% endif %}>
+                        {{ sys.name }}
+                    </option>
+                {% endfor %}
             </select>
         </div>
-        </div>
-    
-        <div class="button-row">
-            <button type="submit" class="submit-btn">Save Changes</button>
-            <a href="{% url 'storage_view' %}" class="cancel-btn">Cancel</a>
-            <a href="{% url 'delete_storage' storage.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this drive?')">Delete</a>
-        </div>
-  </form>
+    </div>
+
+    <div class="button-row">
+        <button type="submit" class="submit-btn">Save Changes</button>
+        <a href="{% url 'storage_view' %}" class="cancel-btn">Cancel</a>
+        <a href="{% url 'delete_storage' storage.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this drive?')">Delete</a>
+    </div>
+</form>
 </div>
 
 <style>

@@ -109,9 +109,16 @@ class StorageDevice(models.Model):
     model = models.CharField(max_length=255)
     serial_number = models.CharField(max_length=255, null=True, blank=True)
     storage_type = models.CharField(max_length=10, choices=[('HDD', 'HDD'), ('SSD', 'SSD'), ('NVMe', 'NVMe')])
+    storage_sub_type = models.CharField(max_length=255, null=True, blank=True)
     capacity_tb = models.PositiveIntegerField()
     rpm = models.PositiveIntegerField(blank=True, null=True)
     failure = models.BooleanField(default=False)
+    cache = models.BooleanField(default=False)
+    parity = models.BooleanField(default=False)
+    utilisation = models.DecimalField(max_digits=5, decimal_places=2, default=0.0, help_text="Percentage of drive used")
+    actual_fragmentation = models.PositiveIntegerField(null=True, blank=True)
+    ideal_fragmentation = models.PositiveIntegerField(null=True, blank=True)
+    fragmentation = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Fragmentation percentage")
 
     def __str__(self):
         rpm_str = f", {self.rpm}RPM" if self.rpm else ""

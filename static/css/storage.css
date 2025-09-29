@@ -185,7 +185,7 @@
 }
 
 .drives-table td {
-  padding: 10px 15px;
+  padding: 4px 12px;
   border-bottom: 1px solid #eee;
 }
 
@@ -366,6 +366,58 @@
   padding: 2px 6px;
   border-radius: 3px;
   font-size: 0.8rem;
+}
+
+/* Additional responsive adjustments for storage view */
+.drives-table {
+    font-size: 0.9rem;
+}
+
+/* Disk badge styles for storage table */
+.disk-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.disk-cache {
+    background-color: #3498db;
+    color: white;
+}
+
+.disk-parity {
+    background-color: #27ae60;
+    color: white;
+}
+
+.disk-failing {
+    background-color: #e74c3c;
+    color: white;
+}
+
+@media (max-width: 1200px) {
+    .drives-table th:nth-child(n+9),
+    .drives-table td:nth-child(n+9) {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .drives-table th:nth-child(n+6),
+    .drives-table td:nth-child(n+6) {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .drives-table th:nth-child(n+4),
+    .drives-table td:nth-child(n+4) {
+        display: none;
+    }
 }
 
 /* Making the form more responsive for mobile */

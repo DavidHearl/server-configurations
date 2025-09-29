@@ -19,67 +19,84 @@
     <div id="add-storage-form" class="storage-form-container" style="display: none;">
       <h3>Add Storage Device</h3>
       <form method="post" action="{% url 'storage_view' %}">
-        {% csrf_token %}
-        <div class="form-grid">
-		<div class="form-group">
-			<label for="model">Model:</label>
-			<input type="text" id="model" name="model" required>
-		</div>
-		
-		<div class="form-group">
-			<label for="serial_number">Serial Number:</label>
-			<input type="text" id="serial_number" name="serial_number">
-		</div>
-
-		<div class="form-group">
-			<label for="storage_type">Type:</label>
-			<select id="storage_type" name="storage_type">
-			<option value="HDD">HDD</option>
-			<option value="SSD">SSD</option>
-			<option value="NVMe">NVMe</option>
-			<option value="Other">Other</option>
-			</select>
-		</div>
-		
-		<div class="form-group">
-			<label for="capacity_tb">Capacity (TB):</label>
-			<input type="number" id="capacity_tb" name="capacity_tb" step="0.1" required>
-		</div>
-
-		<div class="form-group">
-			<label for="disk_location">Disk Location:</label>
-			<input type="number" id="disk_location" name="disk_location" min="0">
-		</div>
-		
-		<div class="form-group">
-			<label for="rpm">RPM:</label>
-			<input type="number" id="rpm" name="rpm">
-		</div>
-
-		<div class="form-group">
-			<label for="failure">Failing Drive?</label>
-			<select id="failure" name="failure">
-			<option value="False" selected>No</option>
-			<option value="True">Yes</option>
-			</select>
-		</div>
-		
-		<div class="form-group">
-			<label for="system">Assign to System:</label>
-			<select id="system" name="system">
-			<option value="">-- None (Miscellaneous) --</option>
-			{% for system in systems %}
-				<option value="{{ system.id }}">{{ system.name }}</option>
-			{% endfor %}
-			</select>
-		</div>
-		</div>
-        
-        <div class="form-buttons">
-          <button type="submit" class="submit-btn">Save Drive</button>
-          <button type="button" id="cancel-add" class="cancel-btn">Cancel</button>
+    {% csrf_token %}
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="model">Model:</label>
+            <input type="text" id="model" name="model" required>
         </div>
-      </form>
+        
+        <div class="form-group">
+            <label for="serial_number">Serial Number:</label>
+            <input type="text" id="serial_number" name="serial_number">
+        </div>
+
+        <div class="form-group">
+            <label for="storage_type">Type:</label>
+            <select id="storage_type" name="storage_type">
+                <option value="HDD">HDD</option>
+                <option value="SSD">SSD</option>
+                <option value="NVMe">NVMe</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="storage_sub_type">Sub Type:</label>
+            <input type="text" id="storage_sub_type" name="storage_sub_type">
+        </div>
+        
+        <div class="form-group">
+            <label for="capacity_tb">Capacity (TB):</label>
+            <input type="number" id="capacity_tb" name="capacity_tb" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="disk_location">Disk Location:</label>
+            <input type="number" id="disk_location" name="disk_location" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="rpm">RPM:</label>
+            <input type="number" id="rpm" name="rpm">
+        </div>
+
+        <div class="form-group">
+            <label for="utilisation">Utilisation (%):</label>
+            <input type="number" id="utilisation" name="utilisation" step="0.01" min="0" max="100" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="fragmentation">Fragmentation (%):</label>
+            <input type="number" id="fragmentation" name="fragmentation" step="0.01" min="0" max="100">
+        </div>
+
+        <div class="form-group">
+            <label for="actual_fragmentation">Actual Fragmentation:</label>
+            <input type="number" id="actual_fragmentation" name="actual_fragmentation">
+        </div>
+
+        <div class="form-group">
+            <label for="ideal_fragmentation">Ideal Fragmentation:</label>
+            <input type="number" id="ideal_fragmentation" name="ideal_fragmentation">
+        </div>
+        
+        <div class="form-group full-width">
+            <label for="system">Assign to System:</label>
+            <select id="system" name="system">
+                <option value="">-- None (Miscellaneous) --</option>
+                {% for system in systems %}
+                    <option value="{{ system.id }}">{{ system.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
+    <div class="form-buttons">
+        <button type="submit" class="submit-btn">Save Drive</button>
+        <button type="button" id="cancel-add" class="cancel-btn">Cancel</button>
+    </div>
+</form>
     </div>
   </div>
 
@@ -96,35 +113,53 @@
         <div class="system-drives-container" id="system-drives-{{ item.system.id }}">
           {% if item.drives %}
             <table class="drives-table">
-              <thead>
-                <tr>
-                  <th>Disk#</th>
-                  <th>Model</th>
-                  <th>Serial</th>
-                  <th>Type</th>
-                  <th>Capacity</th>
-                  <th>RPM</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+            <thead>
+              <tr>
+                <th>Disk#</th>
+                <th>Model</th>
+                <th>Serial</th>
+                <th>Type</th>
+                <th>Sub Type</th>
+                <th>Capacity</th>
+                <th>RPM</th>
+                <th>Util %</th>
+                <th>Frag %</th>
+                <th>Actual Frag</th>
+                <th>Ideal Frag</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for drive in item.drives %}
+                <tr class="drive-row {% if drive.failure %}failing-drive{% endif %}">
+                  <td>
+                    {% if drive.failure %}
+                      <span class="disk-badge disk-failing">Failed</span>
+                    {% elif drive.cache %}
+                      <span class="disk-badge disk-cache">Cache</span>
+                    {% elif drive.parity %}
+                      <span class="disk-badge disk-parity">Parity</span>
+                    {% else %}
+                      {{ drive.disk_location|default:"-" }}
+                    {% endif %}
+                  </td>
+                  <td>{{ drive.model }}</td>
+                  <td>{{ drive.serial_number|default:"N/A" }}</td>
+                  <td>{{ drive.storage_type }}</td>
+                  <td>{{ drive.storage_sub_type|default:"-" }}</td>
+                  <td>{{ drive.capacity_tb }} TB</td>
+                  <td>{{ drive.rpm|default:"N/A" }}</td>
+                  <td>{{ drive.utilisation }}%</td>
+                  <td>{{ drive.fragmentation|default:"-" }}%</td>
+                  <td>{{ drive.actual_fragmentation|default:"-" }}</td>
+                  <td>{{ drive.ideal_fragmentation|default:"-" }}</td>
+                  <td class="actions-cell">
+                    <a href="{% url 'edit_storage' drive.id %}" class="edit-btn">Edit</a>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {% for drive in item.drives %}
-                  <tr class="drive-row {% if drive.failure %}failing-drive{% endif %}">
-                    <td>{{ drive.disk_location|default:"-" }}</td>
-                    <td>{{ drive.model }}</td>
-                    <td>{{ drive.serial_number|default:"N/A" }}</td>
-                    <td>{{ drive.storage_type }}</td>
-                    <td>{{ drive.capacity_tb }} TB</td>
-                    <td>{{ drive.rpm|default:"N/A" }}</td>
-                    <td>{% if drive.failure %}<span class="failure-badge">Failing</span>{% else %}OK{% endif %}</td>
-                    <td class="actions-cell">
-                      <a href="{% url 'edit_storage' drive.id %}" class="edit-btn">Edit</a>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+              {% endfor %}
+            </tbody>
+          </table>
           {% else %}
             <p class="no-drives">No drives assigned to this system</p>
           {% endif %}
@@ -145,22 +180,32 @@
             <th>Model</th>
             <th>Serial</th>
             <th>Type</th>
+            <th>Sub Type</th>
             <th>Capacity</th>
             <th>RPM</th>
+            <th>Util %</th>
+            <th>Frag %</th>
+            <th>Actual Frag</th>
+            <th>Ideal Frag</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {% for drive in misc_drives %}
-            <tr class="drive-row">
-				<td>{{ drive.model }}</td>
-				<td>{{ drive.serial_number|default:"N/A" }}</td>
-				<td>{{ drive.storage_type }}</td>
-				<td>{{ drive.capacity_tb }} TB</td>
-				<td>{{ drive.rpm|default:"N/A" }}</td>
-				<td class="actions-cell">
-					<a href="{% url 'edit_storage' drive.id %}" class="edit-btn">Edit</a>
-				</td>
+            <tr class="drive-row {% if drive.failure %}failing-drive{% endif %}">
+              <td>{{ drive.model }}</td>
+              <td>{{ drive.serial_number|default:"N/A" }}</td>
+              <td>{{ drive.storage_type }}</td>
+              <td>{{ drive.storage_sub_type|default:"-" }}</td>
+              <td>{{ drive.capacity_tb }} TB</td>
+              <td>{{ drive.rpm|default:"N/A" }}</td>
+              <td>{{ drive.utilisation }}%</td>
+              <td>{{ drive.fragmentation|default:"-" }}%</td>
+              <td>{{ drive.actual_fragmentation|default:"-" }}</td>
+              <td>{{ drive.ideal_fragmentation|default:"-" }}</td>
+              <td class="actions-cell">
+                <a href="{% url 'edit_storage' drive.id %}" class="edit-btn">Edit</a>
+              </td>
             </tr>
           {% endfor %}
         </tbody>
