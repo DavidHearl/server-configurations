@@ -429,7 +429,7 @@ def storage_view(request):
         for drive in drives:
             # Calculate fragmentation percentage
             if drive.actual_fragmentation and drive.ideal_fragmentation and drive.ideal_fragmentation > 0:
-                drive.calculated_fragmentation = round(((drive.actual_fragmentation - drive.ideal_fragmentation) / drive.ideal_fragmentation) * 100, 2)
+                drive.calculated_fragmentation = round((1 - (drive.ideal_fragmentation / drive.actual_fragmentation)) * 100, 2)
             else:
                 drive.calculated_fragmentation = None
                 
