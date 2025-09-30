@@ -150,26 +150,26 @@ class System(models.Model):
         return f"{self.id}: {self.location} - {self.name}"
     
 
-class IndexedFolder(models.Model):
-    system = models.ForeignKey(System, on_delete=models.CASCADE)
-    path = models.TextField(unique=True)  # e.g. "/mnt/user/data/exports"
-    total_size = models.BigIntegerField(default=0)
-    last_scanned = models.DateTimeField(null=True, blank=True)
+# class IndexedFolder(models.Model):
+#     system = models.ForeignKey(System, on_delete=models.CASCADE)
+#     path = models.TextField(unique=True)  # e.g. "/mnt/user/data/exports"
+#     total_size = models.BigIntegerField(default=0)
+#     last_scanned = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
-        return self.path
+#     def __str__(self):
+#         return self.path
 
 
-class IndexedFile(models.Model):
-    system = models.ForeignKey(System, on_delete=models.CASCADE)
-    folder = models.ForeignKey(IndexedFolder, on_delete=models.CASCADE, related_name='files')
-    full_path = models.TextField(unique=True)  # e.g. "/mnt/user/data/exports/file.json"
-    filename = models.CharField(max_length=255)
-    file_size = models.BigIntegerField()
-    file_type = models.CharField(max_length=100, blank=True)  # e.g. "zip", "cfg", "mkv"
-    last_scanned = models.DateTimeField(null=True, blank=True)
+# class IndexedFile(models.Model):
+#     system = models.ForeignKey(System, on_delete=models.CASCADE)
+#     folder = models.ForeignKey(IndexedFolder, on_delete=models.CASCADE, related_name='files')
+#     full_path = models.TextField(unique=True)  # e.g. "/mnt/user/data/exports/file.json"
+#     filename = models.CharField(max_length=255)
+#     file_size = models.BigIntegerField()
+#     file_type = models.CharField(max_length=100, blank=True)  # e.g. "zip", "cfg", "mkv"
+#     last_scanned = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
-        return self.full_path
+#     def __str__(self):
+#         return self.full_path
 
 
