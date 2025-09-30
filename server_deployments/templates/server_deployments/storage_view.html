@@ -130,35 +130,31 @@
               </tr>
             </thead>
             <tbody>
-              {% for drive in item.drives %}
-                <tr class="drive-row {% if drive.failure %}failing-drive{% endif %}">
-                  <td>
-                    {% if drive.failure %}
-                      <span class="disk-badge disk-failing">Failed</span>
-                    {% elif drive.cache %}
-                      <span class="disk-badge disk-cache">Cache</span>
-                    {% elif drive.parity %}
-                      <span class="disk-badge disk-parity">Parity</span>
-                    {% else %}
-                      {{ drive.disk_location|default:"-" }}
-                    {% endif %}
-                  </td>
-                  <td>{{ drive.model }}</td>
-                  <td>{{ drive.serial_number|default:"N/A" }}</td>
-                  <td>{{ drive.storage_type }}</td>
-                  <td>{{ drive.storage_sub_type|default:"-" }}</td>
-                  <td>{{ drive.capacity_tb }} TB</td>
-                  <td>{{ drive.rpm|default:"N/A" }}</td>
-                  <td>{{ drive.utilisation }}%</td>
-                  <td>{{ drive.fragmentation|default:"-" }}%</td>
-                  <td>{{ drive.actual_fragmentation|default:"-" }}</td>
-                  <td>{{ drive.ideal_fragmentation|default:"-" }}</td>
-                  <td class="actions-cell">
-                    <a href="{% url 'edit_storage' drive.id %}" class="edit-btn">Edit</a>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
+                {% for drive in item.drives %}
+                  <tr class="drive-row {% if drive.failure %}failing-drive{% endif %}">
+                    <td>
+                      {% if drive.disk_display_value.class %}
+                        <span class="disk-badge {{ drive.disk_display_value.class }}">{{ drive.disk_display_value.text }}</span>
+                      {% else %}
+                        {{ drive.disk_display_value.text }}
+                      {% endif %}
+                    </td>
+                    <td>{{ drive.model }}</td>
+                    <td>{{ drive.serial_number|default:"N/A" }}</td>
+                    <td>{{ drive.storage_type }}</td>
+                    <td>{{ drive.storage_sub_type|default:"-" }}</td>
+                    <td>{{ drive.capacity_tb }} TB</td>
+                    <td>{{ drive.rpm|default:"N/A" }}</td>
+                    <td>{{ drive.utilisation }}%</td>
+                    <td>{{ drive.calculated_fragmentation|default:"-" }}%</td>
+                    <td>{{ drive.actual_fragmentation|default:"-" }}</td>
+                    <td>{{ drive.ideal_fragmentation|default:"-" }}</td>
+                    <td class="actions-cell">
+                      <a href="{% url 'edit_storage' drive.id %}" class="edit-btn">Edit</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
           </table>
           {% else %}
             <p class="no-drives">No drives assigned to this system</p>

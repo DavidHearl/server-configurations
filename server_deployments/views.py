@@ -425,6 +425,39 @@ def storage_view(request):
         # Get all drives for this system
         drives = list(system.storage_devices.all())
         
+        # Add disk_display_value and calculate fragmentation for each drive
+        for drive in drives:
+            # Calculate fragmentation percentage
+            if drive.actual_fragmentation and drive.ideal_fragmentation and drive.ideal_fragmentation > 0:
+                drive.calculated_fragmentation = round(((drive.actual_fragmentation - drive.ideal_fragmentation) / drive.ideal_fragmentation) * 100, 2)
+            else:
+                drive.calculated_fragmentation = None
+                
+            if drive.failure:
+                drive.disk_display_value = {
+                    'type': 'failing',
+                    'text': 'Failing',
+                    'class': 'disk-failing'
+                }
+            elif drive.cache:
+                drive.disk_display_value = {
+                    'type': 'cache',
+                    'text': 'Cache',
+                    'class': 'disk-cache'
+                }
+            elif drive.parity:
+                drive.disk_display_value = {
+                    'type': 'parity',
+                    'text': 'Parity',
+                    'class': 'disk-parity'
+                }
+            else:
+                drive.disk_display_value = {
+                    'type': 'number',
+                    'text': str(drive.disk_location) if drive.disk_location else '-',
+                    'class': ''
+                }
+
         # Custom sorting: None disk_numbers at top, then by disk_number
         def drive_sort_key(drive):
             if drive.disk_location is None:
@@ -443,8 +476,39 @@ def storage_view(request):
             'drives': sorted_drives
         })
     
-    # Get drives that aren't associated with any system
+    # Get drives that aren't associated with any system and calculate fragmentation
     misc_drives = StorageDevice.objects.exclude(id__in=associated_storage_ids)
+    for drive in misc_drives:
+        # Calculate fragmentation percentage
+        if drive.actual_fragmentation and drive.ideal_fragmentation and drive.ideal_fragmentation > 0:
+            drive.calculated_fragmentation = round(((drive.actual_fragmentation - drive.ideal_fragmentation) / drive.ideal_fragmentation) * 100, 2)
+        else:
+            drive.calculated_fragmentation = None
+            
+        if drive.failure:
+            drive.disk_display_value = {
+                'type': 'failing',
+                'text': 'Failing',
+                'class': 'disk-failing'
+            }
+        elif drive.cache:
+            drive.disk_display_value = {
+                'type': 'cache',
+                'text': 'Cache',
+                'class': 'disk-cache'
+            }
+        elif drive.parity:
+            drive.disk_display_value = {
+                'type': 'parity',
+                'text': 'Parity',
+                'class': 'disk-parity'
+            }
+        else:
+            drive.disk_display_value = {
+                'type': 'number',
+                'text': str(drive.disk_location) if drive.disk_location else '-',
+                'class': ''
+            }
     
     return render(request, "server_deployments/storage_view.html", {
         "systems_with_drives": systems_with_ordered_drives,
