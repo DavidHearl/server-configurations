@@ -448,3 +448,722 @@
     display: none;
   }
 }
+
+/* Existing styles... */
+
+/* Server Summary Section */
+.server-summary-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.server-summary-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+/* Overall Summary Bar */
+.summary-bar {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 4px solid #3498db;
+}
+
+.summary-bar.overall {
+  border-left-color: #3498db;
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.summary-header h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.summary-stats-inline {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.stat-item {
+  font-size: 0.9rem;
+  color: #5d6d7e;
+  font-weight: 500;
+}
+
+.stat-item.failing {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.summary-progress-large {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-bar-large {
+  width: 100%;
+  height: 20px;
+  background-color: #ecf0f1;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill-large {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.progress-fill-large.overall {
+  background-color: #3498db;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-text-large {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.progress-capacity {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+/* Summary Row for Drive Types */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.summary-item {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 15px;
+  border-left: 3px solid #95a5a6;
+}
+
+.summary-item.cmr {
+  border-left-color: #27ae60;
+}
+
+.summary-item.smr {
+  border-left-color: #e67e22;
+}
+
+.summary-item.hdd {
+  border-left-color: #8e44ad;
+}
+
+.summary-item.ssd {
+  border-left-color: #f39c12;
+}
+
+.summary-item.nvme {
+  border-left-color: #e74c3c;
+}
+
+.summary-label h5 {
+  margin: 0 0 5px 0;
+  font-size: 0.95rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.summary-details {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.summary-details span {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  background-color: #ecf0f1;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.summary-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Progress Bars */
+.progress-container {
+  margin-top: 10px;
+}
+
+.progress-container.small {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #ecf0f1;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-fill.overall {
+  background-color: #3498db;
+}
+
+.progress-fill.cmr {
+  background-color: #27ae60;
+}
+
+.progress-fill.smr {
+  background-color: #e67e22;
+}
+
+.progress-fill.cache {
+  background-color: #9b59b6;
+}
+
+.progress-fill.parity {
+  background-color: #34495e;
+}
+
+.progress-fill.hdd {
+  background-color: #8e44ad;
+}
+
+.progress-fill.ssd {
+  background-color: #f39c12;
+}
+
+.progress-fill.nvme {
+  background-color: #e74c3c;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+/* Storage Type Items */
+.storage-type-item {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.storage-type-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.storage-type-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.storage-type-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.storage-type-count {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.storage-type-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.storage-type-capacity {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.storage-type-used {
+  color: #7f8c8d;
+}
+
+/* Utilization in Table Cells */
+.utilization-cell {
+  min-width: 120px;
+}
+
+.utilization-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.utilization-bar {
+  flex-grow: 1;
+  height: 6px;
+  background-color: #ecf0f1;
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 50px;
+}
+
+.utilization-fill {
+  height: 100%;
+  background-color: #3498db;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.utilization-text {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #2c3e50;
+  min-width: 35px;
+  text-align: right;
+}
+
+/* High utilization warning colors */
+.utilization-fill {
+  background-color: #27ae60; /* Green for low usage */
+}
+
+.drive-row:has(.utilization-fill[style*="width: 7"]) .utilization-fill,
+.drive-row:has(.utilization-fill[style*="width: 8"]) .utilization-fill {
+  background-color: #f39c12; /* Orange for 70-89% */
+}
+
+.drive-row:has(.utilization-fill[style*="width: 9"]) .utilization-fill {
+  background-color: #e74c3c; /* Red for 90%+ */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .summary-row {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .summary-stats-inline {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .server-summary-section {
+    padding: 15px;
+  }
+  
+  .summary-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .summary-stats-inline {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .progress-info {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .utilization-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .utilization-text {
+    text-align: center;
+    min-width: auto;
+  }
+}
+
+/* Existing storage.css styles continue here... */
+.storage-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.add-storage-section {
+  margin-bottom: 30px;
+}
+
+.add-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.add-button:hover {
+  background-color: #2980b9;
+}
+
+.storage-form-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: span 3;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.form-group input,
+.form-group select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.submit-btn {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #229954;
+}
+
+.cancel-btn:hover {
+  background-color: #7f8c8d;
+}
+
+.storage-section {
+  margin-bottom: 30px;
+}
+
+.storage-section h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #3498db;
+}
+
+.system-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.system-header {
+  background-color: #34495e;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.system-header:hover {
+  background-color: #2c3e50;
+}
+
+.system-header.collapsed {
+  border-radius: 6px;
+}
+
+.system-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.system-info {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+}
+
+.expand-icon {
+  font-size: 0.8rem;
+}
+
+.system-drives-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Drive Tables */
+.drives-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.drives-table th {
+  background-color: #f5f5f5;
+  color: #333;
+  text-align: left;
+  padding: 12px 15px;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+}
+
+.drives-table td {
+  padding: 4px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.drive-row:hover {
+  background-color: #f9f9f9;
+}
+
+.no-drives {
+  padding: 15px;
+  color: #7f8c8d;
+  text-align: center;
+  font-style: italic;
+}
+
+.actions-cell {
+  text-align: right;
+  width: 100px;
+}
+
+.edit-btn {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+.edit-btn:hover {
+  background-color: #2980b9;
+  color: white;
+  text-decoration: none;
+}
+
+/* Disk badge styles for storage table */
+.disk-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.disk-cache {
+  background-color: #3498db;
+  color: white;
+}
+
+.disk-parity {
+  background-color: #27ae60;
+  color: white;
+}
+
+.disk-failing {
+  background-color: #e74c3c;
+  color: white;
+}
+
+/* Additional responsive adjustments for storage view */
+.drives-table {
+  font-size: 0.9rem;
+}
+
+/* Add to storage.css */
+.failing-drive {
+  background-color: #ffeeee;
+}
+
+.failure-badge {
+  background-color: #e74c3c;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1200px) {
+  .drives-table th:nth-child(n+9),
+  .drives-table td:nth-child(n+9) {
+    display: none;
+  }
+  
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .form-group.full-width {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .drives-table th:nth-child(n+6),
+  .drives-table td:nth-child(n+6) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .storage-container {
+    padding: 15px;
+  }
+  
+  .drives-table th,
+  .drives-table td {
+    padding: 8px 6px;
+  }
+  
+  /* Optimize tables for mobile view */
+  .drives-table {
+    font-size: 0.9rem;
+  }
+  
+  .system-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 15px;
+  }
+  
+  .system-name {
+    margin-bottom: 5px;
+  }
+  
+  .system-info {
+    font-size: 0.8rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .drives-table th:nth-child(n+4),
+  .drives-table td:nth-child(n+4) {
+    display: none;
+  }
+}
+
+/* Making the form more responsive for mobile */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .form-group.full-width {
+    grid-column: span 1 !important;
+  }
+  
+  .button-row {
+    flex-direction: column;
+  }
+  
+  .button-row button, 
+  .button-row a {
+    width: 100%;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+}
+
+/* Hide less important columns on small screens */
+@media (max-width: 576px) {
+  .drives-table .small-hide {
+    display: none;
+  }
+}

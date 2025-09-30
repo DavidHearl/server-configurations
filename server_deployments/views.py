@@ -421,14 +421,82 @@ def storage_view(request):
     systems_with_ordered_drives = []
     associated_storage_ids = []
     
+    # Calculate server summary statistics - ONLY drives with disk_location (data drives)
+    data_drives = StorageDevice.objects.filter(disk_location__isnull=False)
+    
+    # Overall statistics for data drives only
+    total_capacity = sum(drive.capacity_tb for drive in data_drives)
+    total_used = sum((drive.capacity_tb * drive.utilisation / 100) for drive in data_drives)
+    overall_utilization = (total_used / total_capacity * 100) if total_capacity > 0 else 0
+    
+    # CMR data drives (drives with disk numbers)
+    cmr_data_drives = data_drives.filter(storage_sub_type__iexact='CMR')
+    cmr_total_capacity = sum(drive.capacity_tb for drive in cmr_data_drives)
+    cmr_total_used = sum((drive.capacity_tb * drive.utilisation / 100) for drive in cmr_data_drives)
+    cmr_utilization = (cmr_total_used / cmr_total_capacity * 100) if cmr_total_capacity > 0 else 0
+    
+    # SMR data drives (drives with disk numbers)
+    smr_data_drives = data_drives.filter(storage_sub_type__iexact='SMR')
+    smr_total_capacity = sum(drive.capacity_tb for drive in smr_data_drives)
+    smr_total_used = sum((drive.capacity_tb * drive.utilisation / 100) for drive in smr_data_drives)
+    smr_utilization = (smr_total_used / smr_total_capacity * 100) if smr_total_capacity > 0 else 0
+    
+    # Storage type breakdown for data drives only
+    storage_types = {}
+    for drive in data_drives:
+        storage_type = drive.storage_type
+        if storage_type not in storage_types:
+            storage_types[storage_type] = {'count': 0, 'capacity': 0, 'used': 0}
+        storage_types[storage_type]['count'] += 1
+        storage_types[storage_type]['capacity'] += drive.capacity_tb
+        storage_types[storage_type]['used'] += (drive.capacity_tb * drive.utilisation / 100)
+    
+    # Add utilization percentage to storage types
+    for storage_type in storage_types:
+        if storage_types[storage_type]['capacity'] > 0:
+            storage_types[storage_type]['utilization'] = (
+                storage_types[storage_type]['used'] / 
+                storage_types[storage_type]['capacity'] * 100
+            )
+        else:
+            storage_types[storage_type]['utilization'] = 0
+    
+    # Failing drives count for data drives only
+    failing_drives_count = data_drives.filter(failure=True).count()
+    
+    # Create summary dictionary
+    server_summary = {
+        'total_drives': data_drives.count(),
+        'total_capacity_tb': round(total_capacity, 2),
+        'total_used_tb': round(total_used, 2),
+        'total_free_tb': round(total_capacity - total_used, 2),
+        'overall_utilization': round(overall_utilization, 2),
+        'failing_drives_count': failing_drives_count,
+        'cmr_data': {
+            'count': cmr_data_drives.count(),
+            'capacity': round(cmr_total_capacity, 2),
+            'used': round(cmr_total_used, 2),
+            'free': round(cmr_total_capacity - cmr_total_used, 2),
+            'utilization': round(cmr_utilization, 2),
+        },
+        'smr_data': {
+            'count': smr_data_drives.count(),
+            'capacity': round(smr_total_capacity, 2),
+            'used': round(smr_total_used, 2),
+            'free': round(smr_total_capacity - smr_total_used, 2),
+            'utilization': round(smr_utilization, 2),
+        },
+        'storage_types': storage_types,
+    }
+    
     for system in systems:
         # Get all drives for this system
         drives = list(system.storage_devices.all())
         
         # Add disk_display_value and calculate fragmentation for each drive
         for drive in drives:
-            # Calculate fragmentation percentage
-            if drive.actual_fragmentation and drive.ideal_fragmentation and drive.ideal_fragmentation > 0:
+            # Calculate fragmentation percentage - CORRECTED FORMULA
+            if drive.actual_fragmentation and drive.ideal_fragmentation and drive.actual_fragmentation > 0:
                 drive.calculated_fragmentation = round((1 - (drive.ideal_fragmentation / drive.actual_fragmentation)) * 100, 2)
             else:
                 drive.calculated_fragmentation = None
@@ -479,9 +547,9 @@ def storage_view(request):
     # Get drives that aren't associated with any system and calculate fragmentation
     misc_drives = StorageDevice.objects.exclude(id__in=associated_storage_ids)
     for drive in misc_drives:
-        # Calculate fragmentation percentage
-        if drive.actual_fragmentation and drive.ideal_fragmentation and drive.ideal_fragmentation > 0:
-            drive.calculated_fragmentation = round(((drive.actual_fragmentation - drive.ideal_fragmentation) / drive.ideal_fragmentation) * 100, 2)
+        # Calculate fragmentation percentage - CORRECTED FORMULA
+        if drive.actual_fragmentation and drive.ideal_fragmentation and drive.actual_fragmentation > 0:
+            drive.calculated_fragmentation = round((1 - (drive.ideal_fragmentation / drive.actual_fragmentation)) * 100, 2)
         else:
             drive.calculated_fragmentation = None
             
@@ -514,6 +582,7 @@ def storage_view(request):
         "systems_with_drives": systems_with_ordered_drives,
         "misc_drives": misc_drives,
         "systems": systems,  # For the dropdown in the add form
+        "server_summary": server_summary,
     })
 
 

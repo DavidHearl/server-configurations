@@ -13,6 +13,95 @@
 <div class="storage-container">
   <h2>Storage Explorer</h2>
   
+  <!-- Server Summary Section -->
+  <div class="server-summary-section">
+    <h3>Data Drive Summary (Drives with Disk Numbers Only)</h3>
+    
+    <!-- Overall Summary Bar -->
+    <div class="summary-bar overall">
+      <div class="summary-header">
+        <h4>Total Data Storage</h4>
+        <div class="summary-stats-inline">
+          <span class="stat-item">{{ server_summary.total_drives }} drives</span>
+          <span class="stat-item">{{ server_summary.total_capacity_tb }} TB total</span>
+          <span class="stat-item">{{ server_summary.total_used_tb }} TB used</span>
+          <span class="stat-item">{{ server_summary.total_free_tb }} TB free</span>
+          {% if server_summary.failing_drives_count > 0 %}
+          <span class="stat-item failing">{{ server_summary.failing_drives_count }} failing</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="summary-progress-large">
+        <div class="progress-bar-large">
+          <div class="progress-fill-large overall" style="width: {{ server_summary.overall_utilization }}%"></div>
+        </div>
+        <div class="progress-info">
+          <span class="progress-text-large">{{ server_summary.overall_utilization }}% used</span>
+          <span class="progress-capacity">{{ server_summary.total_used_tb }} / {{ server_summary.total_capacity_tb }} TB</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drive Type Breakdown -->
+    <div class="summary-row">
+      {% if server_summary.cmr_data.count > 0 %}
+      <div class="summary-item cmr">
+        <div class="summary-label">
+          <h5>CMR Drives</h5>
+          <div class="summary-details">
+            <span>{{ server_summary.cmr_data.count }} drives</span>
+            <span>{{ server_summary.cmr_data.capacity }} TB</span>
+          </div>
+        </div>
+        <div class="summary-progress">
+          <div class="progress-bar">
+            <div class="progress-fill cmr" style="width: {{ server_summary.cmr_data.utilization }}%"></div>
+          </div>
+          <div class="progress-text">{{ server_summary.cmr_data.utilization }}% ({{ server_summary.cmr_data.used }} TB)</div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if server_summary.smr_data.count > 0 %}
+      <div class="summary-item smr">
+        <div class="summary-label">
+          <h5>SMR Drives</h5>
+          <div class="summary-details">
+            <span>{{ server_summary.smr_data.count }} drives</span>
+            <span>{{ server_summary.smr_data.capacity }} TB</span>
+          </div>
+        </div>
+        <div class="summary-progress">
+          <div class="progress-bar">
+            <div class="progress-fill smr" style="width: {{ server_summary.smr_data.utilization }}%"></div>
+          </div>
+          <div class="progress-text">{{ server_summary.smr_data.utilization }}% ({{ server_summary.smr_data.used }} TB)</div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if server_summary.storage_types %}
+      {% for storage_type, data in server_summary.storage_types.items %}
+      <div class="summary-item {{ storage_type|lower }}">
+        <div class="summary-label">
+          <h5>{{ storage_type }} Drives</h5>
+          <div class="summary-details">
+            <span>{{ data.count }} drives</span>
+            <span>{{ data.capacity|floatformat:1 }} TB</span>
+          </div>
+        </div>
+        <div class="summary-progress">
+          <div class="progress-bar">
+            <div class="progress-fill {{ storage_type|lower }}" style="width: {{ data.utilization }}%"></div>
+          </div>
+          <div class="progress-text">{{ data.utilization|floatformat:1 }}% ({{ data.used|floatformat:1 }} TB)</div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+  
   <div class="add-storage-section">
     <button id="toggle-add-form" class="add-button">Add New Drive</button>
     
@@ -122,7 +211,7 @@
                 <th>Sub Type</th>
                 <th>Capacity</th>
                 <th>RPM</th>
-                <th>Util %</th>
+                <th>Utilization</th>
                 <th>Frag %</th>
                 <th>Actual Frag</th>
                 <th>Ideal Frag</th>
@@ -145,7 +234,14 @@
                     <td>{{ drive.storage_sub_type|default:"-" }}</td>
                     <td>{{ drive.capacity_tb }} TB</td>
                     <td>{{ drive.rpm|default:"N/A" }}</td>
-                    <td>{{ drive.utilisation }}%</td>
+                    <td class="utilization-cell">
+                      <div class="utilization-container">
+                        <div class="utilization-bar">
+                          <div class="utilization-fill" style="width: {{ drive.utilisation }}%"></div>
+                        </div>
+                        <span class="utilization-text">{{ drive.utilisation }}%</span>
+                      </div>
+                    </td>
                     <td>{{ drive.calculated_fragmentation|default:"-" }}%</td>
                     <td>{{ drive.actual_fragmentation|default:"-" }}</td>
                     <td>{{ drive.ideal_fragmentation|default:"-" }}</td>
@@ -179,7 +275,7 @@
             <th>Sub Type</th>
             <th>Capacity</th>
             <th>RPM</th>
-            <th>Util %</th>
+            <th>Utilization</th>
             <th>Frag %</th>
             <th>Actual Frag</th>
             <th>Ideal Frag</th>
@@ -195,8 +291,15 @@
               <td>{{ drive.storage_sub_type|default:"-" }}</td>
               <td>{{ drive.capacity_tb }} TB</td>
               <td>{{ drive.rpm|default:"N/A" }}</td>
-              <td>{{ drive.utilisation }}%</td>
-              <td>{{ drive.fragmentation|default:"-" }}%</td>
+              <td class="utilization-cell">
+                <div class="utilization-container">
+                  <div class="utilization-bar">
+                    <div class="utilization-fill" style="width: {{ drive.utilisation }}%"></div>
+                  </div>
+                  <span class="utilization-text">{{ drive.utilisation }}%</span>
+                </div>
+              </td>
+              <td>{{ drive.calculated_fragmentation|default:"-" }}%</td>
               <td>{{ drive.actual_fragmentation|default:"-" }}</td>
               <td>{{ drive.ideal_fragmentation|default:"-" }}</td>
               <td class="actions-cell">
@@ -214,37 +317,41 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Toggle add storage form
-    const toggleAddFormBtn = document.getElementById('toggle-add-form');
-    const addStorageForm = document.getElementById('add-storage-form');
-    const cancelAddBtn = document.getElementById('cancel-add');
+    // Toggle add form
+    const toggleButton = document.getElementById('toggle-add-form');
+    const addForm = document.getElementById('add-storage-form');
+    const cancelButton = document.getElementById('cancel-add');
     
-    toggleAddFormBtn.addEventListener('click', function() {
-      addStorageForm.style.display = 'block';
-      toggleAddFormBtn.style.display = 'none';
+    toggleButton.addEventListener('click', function() {
+      if (addForm.style.display === 'none') {
+        addForm.style.display = 'block';
+        toggleButton.textContent = 'Cancel';
+      } else {
+        addForm.style.display = 'none';
+        toggleButton.textContent = 'Add New Drive';
+      }
     });
     
-    cancelAddBtn.addEventListener('click', function() {
-      addStorageForm.style.display = 'none';
-      toggleAddFormBtn.style.display = 'block';
+    cancelButton.addEventListener('click', function() {
+      addForm.style.display = 'none';
+      toggleButton.textContent = 'Add New Drive';
     });
     
-    // Handle system header clicks for expanding/collapsing drive details
-    const systemHeaders = document.querySelectorAll('.system-header');
-    systemHeaders.forEach(header => {
-      header.addEventListener('click', function(e) {
+    // Expandable systems
+    document.querySelectorAll('.system-header.expandable').forEach(header => {
+      header.addEventListener('click', function() {
         const systemId = this.getAttribute('data-system-id');
         const drivesContainer = document.getElementById(`system-drives-${systemId}`);
         const expandIcon = this.querySelector('.expand-icon');
         
-        if (drivesContainer.style.display === 'block' || drivesContainer.style.display === '') {
-          drivesContainer.style.display = 'none';
-          expandIcon.textContent = '►';
-          this.classList.add('collapsed');
-        } else {
+        if (drivesContainer.style.display === 'none') {
           drivesContainer.style.display = 'block';
           expandIcon.textContent = '▼';
           this.classList.remove('collapsed');
+        } else {
+          drivesContainer.style.display = 'none';
+          expandIcon.textContent = '►';
+          this.classList.add('collapsed');
         }
       });
     });
