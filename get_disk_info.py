@@ -152,11 +152,11 @@ def update_storage_devices():
             
             # Try to find existing storage device by disk location in the Plex system
             try:
-                storage_device = plex_system.storage_devices.get(disk_location=disk_number)
-                print(f"  Found existing device at disk location {disk_number}: {storage_device.model}")
+                storage_device = plex_system.storage_devices.get(disk_number=disk_number)
+                print(f"  Found existing device at disk number {disk_number}: {storage_device.model}")
                 created = False
             except StorageDevice.DoesNotExist:
-                print(f"  No storage device found at disk location {disk_number} in Plex system")
+                print(f"  No storage device found at disk number {disk_number} in Plex system")
                 continue  # Skip if no matching device found
             
             # Update the fragmentation and utilization data
@@ -187,6 +187,12 @@ def update_storage_devices():
                     print(f"  Updated fragmentation percentage: {frag}%")
                 except ValueError:
                     pass
+            
+            # Update timestamp if any fragmentation data was modified
+            if actual or ideal or frag:
+                from django.utils.timezone import now
+                storage_device.fragmentation_last_updated = now()
+                print(f"  Updated fragmentation timestamp")
             
             storage_device.save()
             updated_count += 1
