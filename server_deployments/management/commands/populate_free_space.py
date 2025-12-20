@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
         for device in devices:
             if device.capacity_tb and device.utilisation is not None:
-                total_gb = device.capacity_tb * 1024
+                total_gb = device.capacity_tb * 1000
                 used_gb = total_gb * (device.utilisation / 100)
                 free_gb = total_gb - used_gb
                 device.free_space_gb = int(free_gb)

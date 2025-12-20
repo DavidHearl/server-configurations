@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load humanize %}
+{% load custom_tags %}
 {% load static %}
 
 {% block title %}Storage Explorer{% endblock %}
@@ -246,7 +247,7 @@
 										<td>{{ drive.storage_type }}</td>
 										<td>{{ drive.storage_sub_type|default:"-" }}</td>
 										<td>{{ drive.capacity_tb }} TB</td>
-										<td>{{ drive.free_space_gb|default:"-" }} GB</td>
+										<td>{{ drive.capacity_tb|free_space_gb:drive.utilisation }} GB</td>
 										<td>{{ drive.rpm|default:"N/A" }}</td>
 										<td class="utilization-cell">
 											<div class="utilization-container">
@@ -338,7 +339,7 @@
 							<td>{{ drive.storage_type }}</td>
 							<td>{{ drive.storage_sub_type|default:"-" }}</td>
 							<td>{{ drive.capacity_tb }} TB</td>
-							<td>{{ drive.free_space_gb|default:"-" }} GB</td>
+							<td>{{ drive.capacity_tb|free_space_gb:drive.utilisation }} GB</td>
 							<td>{{ drive.rpm|default:"N/A" }}</td>
 							<td class="utilization-cell">
 								<div class="utilization-container">
@@ -664,7 +665,12 @@
 						document.getElementById('edit-disk_position').value = data.disk_position || '';
 						document.getElementById('edit-rpm').value = data.rpm || '';
 						document.getElementById('edit-utilisation').value = data.utilisation || '';
-						document.getElementById('edit-free_space_gb').value = data.free_space_gb || '';
+						// Calculate free space dynamically: total_gb = capacity_tb * 1000, free_gb = total_gb - (total_gb * utilisation / 100)
+						const editCapacity = parseFloat(data.capacity_tb) || 0;
+						const editUtilisation = parseFloat(data.utilisation) || 0;
+						const editTotalGb = editCapacity * 1000;
+						const editFreeGb = Math.round(editTotalGb - (editTotalGb * editUtilisation / 100));
+						document.getElementById('edit-free_space_gb').value = editFreeGb || '';
 						document.getElementById('edit-fragmentation').value = data.fragmentation || '';
 						document.getElementById('edit-actual_fragmentation').value = data.actual_fragmentation || '';
 						document.getElementById('edit-ideal_fragmentation').value = data.ideal_fragmentation || '';
@@ -711,7 +717,7 @@
 			const utilisation = parseFloat(utilisationInput.value) || 0;
 			const capacityTb = parseFloat(capacityInput.value) || 0;
 			if (capacityTb > 0) {
-				const totalGb = capacityTb * 1024;
+				const totalGb = capacityTb * 1000;
 				const usedGb = totalGb * (utilisation / 100);
 				const freeGb = totalGb - usedGb;
 				freeSpaceInput.value = Math.round(freeGb);
@@ -722,7 +728,7 @@
 			const freeGb = parseFloat(freeSpaceInput.value) || 0;
 			const capacityTb = parseFloat(capacityInput.value) || 0;
 			if (capacityTb > 0) {
-				const totalGb = capacityTb * 1024;
+				const totalGb = capacityTb * 1000;
 				if (totalGb > 0) {
 					const usedGb = totalGb - freeGb;
 					const utilisation = (usedGb / totalGb) * 100;
@@ -751,7 +757,7 @@
 			const utilisation = parseFloat(addUtilisationInput.value) || 0;
 			const capacityTb = parseFloat(addCapacityInput.value) || 0;
 			if (capacityTb > 0) {
-				const totalGb = capacityTb * 1024;
+				const totalGb = capacityTb * 1000;
 				const usedGb = totalGb * (utilisation / 100);
 				const freeGb = totalGb - usedGb;
 				addFreeSpaceInput.value = Math.round(freeGb);
@@ -762,7 +768,7 @@
 			const freeGb = parseFloat(addFreeSpaceInput.value) || 0;
 			const capacityTb = parseFloat(addCapacityInput.value) || 0;
 			if (capacityTb > 0) {
-				const totalGb = capacityTb * 1024;
+				const totalGb = capacityTb * 1000;
 				if (totalGb > 0) {
 					const usedGb = totalGb - freeGb;
 					const utilisation = (usedGb / totalGb) * 100;

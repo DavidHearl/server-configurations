@@ -403,7 +403,7 @@ def storage_view(request):
         final_utilisation = float(utilisation) if utilisation else 0
         
         if capacity_tb:
-            total_gb = float(capacity_tb) * 1024
+            total_gb = float(capacity_tb) * 1000
             if free_space_gb:
                 # If free space is manually set, recalculate utilisation
                 used_gb = total_gb - float(free_space_gb)
@@ -678,7 +678,7 @@ def edit_storage(request, storage_id):
             free_space_gb = form.cleaned_data.get('free_space_gb')
             
             if capacity_tb:
-                total_gb = capacity_tb * 1024
+                total_gb = capacity_tb * 1000
                 if free_space_gb is not None:
                     # If free space is manually set, recalculate utilisation
                     used_gb = total_gb - free_space_gb
