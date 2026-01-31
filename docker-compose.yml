@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    entrypoint: []
+    command: ["gunicorn","server_configurations.wsgi:application","--bind","0.0.0.0:8000","--workers","3","--log-level","info","--access-logfile","-","--error-logfile","-"]
+
+    networks: [traefik-net]
+
+    # Only needed if you want to access it directly via IP:port (optional if you're proxying)
+    ports:
+      - "8002:8000"
+
+    environment:
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      DATABASE_URL: ${DATABASE_URL}
+      STATIC_ROOT: ${STATIC_ROOT}
+      MEDIA_ROOT: ${MEDIA_ROOT}
+
+    volumes:
+      - /srv/static/server-configurations:/app/staticfiles
+      - /srv/media/server-configurations:/app/media
+
+    restart: unless-stopped
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.server_configurations.rule=Host(`server-configurations.mediaservers.co.uk`)
+      - traefik.http.routers.server_configurations.entrypoints=web
+      - traefik.http.services.server_configurations.loadbalancer.server.port=8000
+
+networks:
+  traefik-net:
+    external: true
