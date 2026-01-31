@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from .models import *
 from .forms import *
 from django.utils.timezone import now
@@ -382,12 +383,37 @@ def storage_view(request):
         storage_sub_type = request.POST.get('storage_sub_type')
         capacity_tb = request.POST.get('capacity_tb')
         rpm = request.POST.get('rpm')
-        disk_location = request.POST.get('disk_location')
+        disk_number = request.POST.get('disk_number')
+        disk_position = request.POST.get('disk_position')
         utilisation = request.POST.get('utilisation', 0)
         fragmentation = request.POST.get('fragmentation')
         actual_fragmentation = request.POST.get('actual_fragmentation')
         ideal_fragmentation = request.POST.get('ideal_fragmentation')
+        free_space_gb = request.POST.get('free_space_gb')
         system_id = request.POST.get('system')
+        
+        # Calculate fragmentation percentage if actual and ideal fragmentation are provided
+        if actual_fragmentation and ideal_fragmentation and int(actual_fragmentation) > 0:
+            calculated_fragmentation = round((1 - (int(ideal_fragmentation) / int(actual_fragmentation))) * 100, 2)
+        else:
+            calculated_fragmentation = float(fragmentation) if fragmentation else None
+        
+        # Calculate free space or utilisation
+        final_free_space_gb = None
+        final_utilisation = float(utilisation) if utilisation else 0
+        
+        if capacity_tb:
+            total_gb = float(capacity_tb) * 1000
+            if free_space_gb:
+                # If free space is manually set, recalculate utilisation
+                used_gb = total_gb - float(free_space_gb)
+                if total_gb > 0:
+                    final_utilisation = round((used_gb / total_gb) * 100, 2)
+                final_free_space_gb = int(free_space_gb)
+            else:
+                # Calculate free space from utilisation
+                used_gb = total_gb * (final_utilisation / 100)
+                final_free_space_gb = int(total_gb - used_gb)
         
         # Create and save the storage device
         storage = StorageDevice.objects.create(
@@ -397,11 +423,14 @@ def storage_view(request):
             storage_sub_type=storage_sub_type,
             capacity_tb=float(capacity_tb) if capacity_tb else 0,
             rpm=int(rpm) if rpm else None,
-            disk_location=int(disk_location) if disk_location else None,
-            utilisation=float(utilisation) if utilisation else 0.0,
-            fragmentation=float(fragmentation) if fragmentation else None,
+            disk_number=int(disk_number) if disk_number else None,
+            disk_position=int(disk_position) if disk_position else None,
+            utilisation=final_utilisation,
+            fragmentation=calculated_fragmentation,
             actual_fragmentation=int(actual_fragmentation) if actual_fragmentation else None,
-            ideal_fragmentation=int(ideal_fragmentation) if ideal_fragmentation else None
+            ideal_fragmentation=int(ideal_fragmentation) if ideal_fragmentation else None,
+            fragmentation_last_updated=now() if (actual_fragmentation or ideal_fragmentation) else None,
+            free_space_gb=final_free_space_gb
         )
         
         # Assign to system if specified
@@ -421,8 +450,8 @@ def storage_view(request):
     systems_with_ordered_drives = []
     associated_storage_ids = []
     
-    # Calculate server summary statistics - ONLY drives with disk_location (data drives)
-    data_drives = StorageDevice.objects.filter(disk_location__isnull=False)
+    # Calculate server summary statistics - ONLY drives with disk_number (data drives)
+    data_drives = StorageDevice.objects.filter(disk_number__isnull=False)
     
     # Overall statistics for data drives only
     total_capacity = sum(drive.capacity_tb for drive in data_drives)
@@ -451,7 +480,7 @@ def storage_view(request):
         storage_types[storage_type]['capacity'] += drive.capacity_tb
         storage_types[storage_type]['used'] += (drive.capacity_tb * drive.utilisation / 100)
     
-    # Add utilization percentage to storage types
+    # Add utilization percentage and free space to storage types
     for storage_type in storage_types:
         if storage_types[storage_type]['capacity'] > 0:
             storage_types[storage_type]['utilization'] = (
@@ -460,6 +489,9 @@ def storage_view(request):
             )
         else:
             storage_types[storage_type]['utilization'] = 0
+        storage_types[storage_type]['free'] = round(
+            storage_types[storage_type]['capacity'] - storage_types[storage_type]['used'], 2
+        )
     
     # Failing drives count for data drives only
     failing_drives_count = data_drives.filter(failure=True).count()
@@ -495,11 +527,14 @@ def storage_view(request):
         
         # Add disk_display_value and calculate fragmentation for each drive
         for drive in drives:
-            # Calculate fragmentation percentage - CORRECTED FORMULA
-            if drive.actual_fragmentation and drive.ideal_fragmentation and drive.actual_fragmentation > 0:
-                drive.calculated_fragmentation = round((1 - (drive.ideal_fragmentation / drive.actual_fragmentation)) * 100, 2)
+            # Use stored fragmentation percentage
+            drive.calculated_fragmentation = drive.fragmentation
+            
+            # Calculate fragmentation difference
+            if drive.actual_fragmentation and drive.ideal_fragmentation:
+                drive.fragmentation_difference = drive.actual_fragmentation - drive.ideal_fragmentation
             else:
-                drive.calculated_fragmentation = None
+                drive.fragmentation_difference = None
                 
             if drive.failure:
                 drive.disk_display_value = {
@@ -522,15 +557,15 @@ def storage_view(request):
             else:
                 drive.disk_display_value = {
                     'type': 'number',
-                    'text': str(drive.disk_location) if drive.disk_location else '-',
+                    'text': str(drive.disk_number) if drive.disk_number else '-',
                     'class': ''
                 }
 
         # Custom sorting: None disk_numbers at top, then by disk_number
         def drive_sort_key(drive):
-            if drive.disk_location is None:
+            if drive.disk_number is None:
                 return (0, 0)  # Tuple for sorting: (priority, disk_number)
-            return (1, drive.disk_location)
+            return (1, drive.disk_number)
         
         # Sort the drives
         sorted_drives = sorted(drives, key=drive_sort_key)
@@ -547,11 +582,14 @@ def storage_view(request):
     # Get drives that aren't associated with any system and calculate fragmentation
     misc_drives = StorageDevice.objects.exclude(id__in=associated_storage_ids)
     for drive in misc_drives:
-        # Calculate fragmentation percentage - CORRECTED FORMULA
-        if drive.actual_fragmentation and drive.ideal_fragmentation and drive.actual_fragmentation > 0:
-            drive.calculated_fragmentation = round((1 - (drive.ideal_fragmentation / drive.actual_fragmentation)) * 100, 2)
+        # Use stored fragmentation percentage
+        drive.calculated_fragmentation = drive.fragmentation
+            
+        # Calculate fragmentation difference
+        if drive.actual_fragmentation and drive.ideal_fragmentation:
+            drive.fragmentation_difference = drive.actual_fragmentation - drive.ideal_fragmentation
         else:
-            drive.calculated_fragmentation = None
+            drive.fragmentation_difference = None
             
         if drive.failure:
             drive.disk_display_value = {
@@ -574,7 +612,7 @@ def storage_view(request):
         else:
             drive.disk_display_value = {
                 'type': 'number',
-                'text': str(drive.disk_location) if drive.disk_location else '-',
+                'text': str(drive.disk_number) if drive.disk_number else '-',
                 'class': ''
             }
     
@@ -625,6 +663,39 @@ def edit_storage(request, storage_id):
     if request.method == 'POST':
         form = StorageDeviceForm(request.POST, instance=storage)
         if form.is_valid():
+            # Calculate and save fragmentation percentage
+            new_actual = form.cleaned_data.get('actual_fragmentation')
+            new_ideal = form.cleaned_data.get('ideal_fragmentation')
+            if new_actual and new_ideal and new_actual > 0:
+                calculated_fragmentation = round((1 - (new_ideal / new_actual)) * 100, 2)
+                form.instance.fragmentation = calculated_fragmentation
+            else:
+                form.instance.fragmentation = None
+            
+            # Calculate and save free space in GB or recalculate utilisation if free space is provided
+            capacity_tb = form.cleaned_data.get('capacity_tb')
+            utilisation = form.cleaned_data.get('utilisation')
+            free_space_gb = form.cleaned_data.get('free_space_gb')
+            
+            if capacity_tb:
+                total_gb = capacity_tb * 1000
+                if free_space_gb is not None:
+                    # If free space is manually set, recalculate utilisation
+                    used_gb = total_gb - free_space_gb
+                    if total_gb > 0:
+                        calculated_utilisation = round((used_gb / total_gb) * 100, 2)
+                        form.instance.utilisation = calculated_utilisation
+                    form.instance.free_space_gb = free_space_gb
+                elif utilisation is not None:
+                    # If utilisation is set, calculate free space
+                    used_gb = total_gb * (utilisation / 100)
+                    free_gb = total_gb - used_gb
+                    form.instance.free_space_gb = int(free_gb)
+                else:
+                    form.instance.free_space_gb = None
+            else:
+                form.instance.free_space_gb = None
+            
             # Save the storage device
             storage = form.save()
             
@@ -643,12 +714,38 @@ def edit_storage(request, storage_id):
                 except System.DoesNotExist:
                     pass
             
+            # Check if this is an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': True})
+            
             # Redirect back to storage view
             return redirect('storage_view')
     else:
+        # Check if this is an AJAX request for data
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'model': storage.model,
+                'serial_number': storage.serial_number,
+                'storage_type': storage.storage_type,
+                'storage_sub_type': storage.storage_sub_type,
+                'capacity_tb': storage.capacity_tb,
+                'disk_number': storage.disk_number,
+                'disk_position': storage.disk_position,
+                'rpm': storage.rpm,
+                'utilisation': storage.utilisation,
+                'free_space_gb': storage.free_space_gb,
+                'fragmentation': storage.fragmentation,
+                'actual_fragmentation': storage.actual_fragmentation,
+                'ideal_fragmentation': storage.ideal_fragmentation,
+                'cache': storage.cache,
+                'parity': storage.parity,
+                'failure': storage.failure,
+                'system_id': current_system.id if current_system else None,
+            })
+        
         form = StorageDeviceForm(instance=storage)
     
-    # Render the form
+    # Render the form (fallback for non-AJAX requests)
     return render(request, 'server_deployments/edit_storage.html', {
         'form': form,
         'storage': storage,
@@ -656,3 +753,25 @@ def edit_storage(request, storage_id):
         'systems': System.objects.all(),
         'current_system': current_system
     })
+
+
+def delete_storage(request, storage_id):
+    storage = get_object_or_404(StorageDevice, id=storage_id)
+    
+    if request.method == 'POST':
+        # Remove from any systems first
+        for system in System.objects.all():
+            if storage in system.storage_devices.all():
+                system.storage_devices.remove(storage)
+        
+        # Delete the storage device
+        storage.delete()
+        
+        # Check if this is an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+        
+        return redirect('storage_view')
+    
+    # For GET requests, redirect to storage view
+    return redirect('storage_view')

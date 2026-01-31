@@ -105,7 +105,8 @@ class Case(models.Model):
 
 
 class StorageDevice(models.Model):
-    disk_location = models.PositiveIntegerField(null=True, blank=True)
+    disk_number = models.PositiveIntegerField(null=True, blank=True)
+    disk_position = models.PositiveIntegerField(null=True, blank=True)
     model = models.CharField(max_length=255)
     serial_number = models.CharField(max_length=255, null=True, blank=True)
     storage_type = models.CharField(max_length=10, choices=[('HDD', 'HDD'), ('SSD', 'SSD'), ('NVMe', 'NVMe')])
@@ -116,9 +117,11 @@ class StorageDevice(models.Model):
     cache = models.BooleanField(default=False)
     parity = models.BooleanField(default=False)
     utilisation = models.DecimalField(max_digits=5, decimal_places=2, default=0.0, help_text="Percentage of drive used")
+    free_space_gb = models.PositiveIntegerField(null=True, blank=True, help_text="Free space in GB")
     actual_fragmentation = models.PositiveIntegerField(null=True, blank=True)
     ideal_fragmentation = models.PositiveIntegerField(null=True, blank=True)
     fragmentation = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Fragmentation percentage")
+    fragmentation_last_updated = models.DateTimeField(null=True, blank=True, help_text="Last time fragmentation data was updated")
 
     def __str__(self):
         rpm_str = f", {self.rpm}RPM" if self.rpm else ""

@@ -8,6 +8,7 @@ urlpatterns = [
     path('databases/', views.databases, name='databases'),
     path('storage/', views.storage_view, name='storage_view'),
     path('storage/<int:storage_id>/edit/', views.edit_storage, name='edit_storage'),
+    path('storage/<int:storage_id>/delete/', views.delete_storage, name='delete_storage'),
     
     # CPU routes
     path('components/add-cpu/', views.add_cpu, name='add_cpu'),
