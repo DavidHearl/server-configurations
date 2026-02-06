@@ -242,8 +242,8 @@
 												{{ drive.disk_display_value.text }}
 											{% endif %}
 										</td>
-										<td>{{ drive.model }}</td>
-										<td>{{ drive.serial_number|default:"N/A" }}</td>
+										<td class="truncate">{{ drive.model }}</td>
+										<td class="truncate">{{ drive.serial_number|default:"N/A" }}</td>
 										<td>{{ drive.storage_type }}</td>
 										<td>{{ drive.storage_sub_type|default:"-" }}</td>
 										<td>{{ drive.capacity_tb }} TB</td>
@@ -334,8 +334,8 @@
 				<tbody>
 					{% for drive in misc_drives %}
 						<tr class="drive-row {% if drive.failure %}failing-drive{% endif %} {% if drive.storage_sub_type|lower == 'cmr' %}cmr-drive{% elif drive.storage_sub_type|lower == 'smr' %}smr-drive{% endif %}">
-							<td>{{ drive.model }}</td>
-							<td>{{ drive.serial_number|default:"N/A" }}</td>
+							<td class="truncate">{{ drive.model }}</td>
+							<td class="truncate">{{ drive.serial_number|default:"N/A" }}</td>
 							<td>{{ drive.storage_type }}</td>
 							<td>{{ drive.storage_sub_type|default:"-" }}</td>
 							<td>{{ drive.capacity_tb }} TB</td>
@@ -363,6 +363,57 @@
 			<p class="no-drives">No miscellaneous drives found</p>
 		{% endif %}
 	</div>
+
+	{% if failed_drives %}
+	<div class="storage-section failed-section">
+		<h3>Failed Drives</h3>
+		<table class="drives-table">
+			<thead>
+				<tr>
+					<th>Model</th>
+					<th>Serial</th>
+					<th>Type</th>
+					<th>Sub Type</th>
+					<th>Capacity</th>
+					<th>Free Space</th>
+					<th>RPM</th>
+					<th>Utilization</th>
+					<th>Frag %</th>
+					<th>Frag Diff</th>
+					<th>Updated</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for drive in failed_drives %}
+					<tr class="drive-row failing-drive {% if drive.storage_sub_type|lower == 'cmr' %}cmr-drive{% elif drive.storage_sub_type|lower == 'smr' %}smr-drive{% endif %}">
+						<td class="truncate">{{ drive.model }}</td>
+						<td class="truncate">{{ drive.serial_number|default:"N/A" }}</td>
+						<td>{{ drive.storage_type }}</td>
+						<td>{{ drive.storage_sub_type|default:"-" }}</td>
+						<td>{{ drive.capacity_tb }} TB</td>
+						<td>{{ drive.capacity_tb|free_space_gb:drive.utilisation }} GB</td>
+						<td>{{ drive.rpm|default:"N/A" }}</td>
+						<td class="utilization-cell">
+							<div class="utilization-container">
+								<div class="utilization-bar">
+									<div class="utilization-fill" style="width: {{ drive.utilisation }}%"></div>
+								</div>
+								<span class="utilization-text">{{ drive.utilisation }}%</span>
+							</div>
+						</td>
+						<td>{{ drive.calculated_fragmentation|default:"-" }}%</td>
+						<td>{% if drive.fragmentation_difference is not None %}{{ drive.fragmentation_difference }}{% else %}-{% endif %}</td>
+						<td>{% if drive.fragmentation_last_updated %}{{ drive.fragmentation_last_updated|date:"M d, Y" }}{% else %}-{% endif %}</td>
+						<td class="actions-cell">
+							<button type="button" class="edit-btn" data-drive-id="{{ drive.id }}">Edit</button>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{% endif %}
 </div>
 
 <!-- Edit Storage Modal -->

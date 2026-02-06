@@ -581,6 +581,11 @@ def storage_view(request):
     
     # Get drives that aren't associated with any system and calculate fragmentation
     misc_drives = StorageDevice.objects.exclude(id__in=associated_storage_ids)
+    
+    # Separate failed drives that aren't in any system
+    failed_drives = []
+    active_misc_drives = []
+    
     for drive in misc_drives:
         # Use stored fragmentation percentage
         drive.calculated_fragmentation = drive.fragmentation
@@ -615,10 +620,17 @@ def storage_view(request):
                 'text': str(drive.disk_number) if drive.disk_number else '-',
                 'class': ''
             }
+        
+        # Separate failed drives from active misc drives
+        if drive.failure:
+            failed_drives.append(drive)
+        else:
+            active_misc_drives.append(drive)
     
     return render(request, "server_deployments/storage_view.html", {
         "systems_with_drives": systems_with_ordered_drives,
-        "misc_drives": misc_drives,
+        "misc_drives": active_misc_drives,
+        "failed_drives": failed_drives,
         "systems": systems,  # For the dropdown in the add form
         "server_summary": server_summary,
     })

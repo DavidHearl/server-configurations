@@ -1402,3 +1402,53 @@
  } 
  
  
+/* Table improvements for better single-line layout */
+.drives-table {
+    table-layout: fixed;
+}
+
+.drives-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.drives-table td.truncate {
+    max-width: 150px;
+}
+
+/* Failed section styling */
+.failed-section h3 {
+    color: #e74c3c;
+    border-bottom: 2px solid #e74c3c;
+}
+
+.location-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-left: 10px;
+}
+
+.location-btn:hover {
+    background-color: #2980b9;
+}
+
+.set-today-btn {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.set-today-btn:hover {
+    background-color: #229954;
+}
