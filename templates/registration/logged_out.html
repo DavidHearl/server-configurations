@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Logged Out - Server Configurations{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 100px auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+    <h2 style="margin-bottom: 20px; color: #333;">You have been logged out</h2>
+    
+    <p style="color: #666; margin-bottom: 30px;">Thank you for using Server Configurations. You have been successfully logged out.</p>
+    
+    <a href="{% url 'login' %}" 
+       style="display: inline-block; padding: 12px 30px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; font-weight: 500;">
+        Log in again
+    </a>
+</div>
+{% endblock %}

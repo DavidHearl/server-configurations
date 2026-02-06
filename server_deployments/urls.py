@@ -59,4 +59,12 @@ urlpatterns = [
     path('components/add-rack/', views.add_rack, name='add_rack'),
     path('components/edit-rack/<int:rack_id>/', views.edit_rack, name='edit_rack'),
     path('components/delete-rack/<int:rack_id>/', views.delete_rack, name='delete_rack'),
+    
+    # Django Guides routes
+    path('django-guides/', views.django_guides, name='django_guides'),
+    path('django-guides/<slug:slug>/', views.django_guide_detail, name='django_guide_detail'),
+    path('django-guides/<slug:guide_slug>/add-step/', views.django_step_add, name='django_step_add'),
+    path('django-guides/step/<int:step_id>/edit/', views.django_step_edit, name='django_step_edit'),
+    path('django-guides/step/<int:step_id>/delete/', views.django_step_delete, name='django_step_delete'),
+    path('django-guides/step/reorder/', views.django_step_reorder, name='django_step_reorder'),
 ]

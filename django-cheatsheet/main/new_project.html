@@ -1,0 +1,122 @@
+{% extends 'main/base.html' %}
+
+{% block title %}New Project - Django Cheatsheet{% endblock %}
+
+{% block content %}
+<h1>New Project</h1>
+
+<h2>1. Create the Django Project</h2>
+<ol>
+<li>Open VS Code and open the terminal (View > Terminal).</li>
+<li>Navigate to your desired directory:
+<ul>
+<li class="description">macOS/Linux:</li>
+<pre><code>cd '/Users/davidhearl/Documents/08 - Programming/GitHub'</code></pre>
+<li>Windows:</li>
+<pre><code>cd "C:\Users\davidhearl\iCloudDrive\Documents\Programming\GitHub"</code></pre>
+</ul>
+</li>
+<li>Create the project directory</li>
+<pre><code>mkdir myproject</code></pre>
+<pre><code>cd myproject</code></pre>
+<li>Create a virtual environment:</li>
+<pre><code>python -m venv virtual_environment</code></pre>
+<li>Activate the virtual environment:</li>
+<ul>
+<li class="description">Windows:</li>
+<pre><code>virtual_environment\Scripts\activate</code></pre>
+<li class="description">macOS/Linux:</li>
+<pre><code>source virtual_environment/bin/activate</code></pre>
+</ul>
+<li>Optional: Upgrade pip to the latest version to avoid warnings and improve package management:</li>
+<pre><code>python -m pip install --upgrade pip</code></pre>
+<li>Install Django and save requirements:</li>
+<pre><code>pip install Django</code></pre>
+<pre><code>pip freeze > requirements.txt</code></pre>
+<li>Create a new Django project:</li>
+<pre><code>django-admin startproject myproject .</code></pre>
+<li>Migrate changes</li>
+<pre><code>python3 manage.py migrate</code></pre>
+<li>Optional: Open the project in Visual Studio Code:</li>
+<pre><code>code .</code></pre>
+<p class="description">Note: This requires the 'code' command to be installed in your PATH.</p>
+<li>Navigate into your project:</li>
+<pre><code>cd myproject</code></pre>
+<li>Run the development server:</li>
+<pre><code>python3 manage.py runserver</code></pre>
+</ol>
+
+<h2>2. Create a Django App</h2>
+<ol>
+<li>Create the app:</li>
+<pre><code>python manage.py startapp myapp</code></pre>
+<li>Open the <code>settings.py</code></li>
+<li>Add <code>'myapp'</code> to <code>INSTALLED_APPS</code> in <code>settings.py</code>.</li>
+<pre class="file-content">
+<code>INSTALLED_APPS = [
+    ...
+    'myapp',
+]</code></pre>
+<li>Create a superuser:
+<pre><code>python manage.py createsuperuser</code></pre>
+</li>
+</ol>
+
+<h2>3. Django Settings to Change</h2>
+<p>Edit <code>myproject/settings.py</code>:</p>
+<ul>
+<li>Create a <code>.env</code> file in the project root using the terminal:</li>
+<pre><code>touch .env</code></pre>
+<pre><code>echo "SECRET_KEY=your-very-secret-key" >> .env</code></pre>
+<li>Install python-dotenv to load environment variables:</li>
+<pre><code>pip install python-dotenv</code></pre>
+<pre><code>pip freeze > requirements.txt</code></pre>
+<li>Turn off debug in production:</li>
+<pre class="file-content"><code>DEBUG = False</code></pre>
+<li>Set allowed hosts:</li>
+<pre class="file-content"><code>ALLOWED_HOSTS = ['yourdomain.com', 'localhost']</code></pre>
+<li>Adjust timezone and language:</li>
+<pre class="file-content"><code>TIME_ZONE = 'Europe/Dublin'
+LANGUAGE_CODE = 'en-us'</code></pre>
+<li>Use environment variable for secret key:</li>
+<pre class="file-content"><code>import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SECRET_KEY = os.getenv('SECRET_KEY')</code></pre>
+</ul>
+
+<h2>4. Link the Project to GitHub</h2>
+<ol>
+<li>Initialize a Git repository:</li>
+<pre><code>git init</code></pre>
+<li>Create a <code>.gitignore</code> file in the project root and add:</li>
+<pre><code>touch .gitignore</code></pre>
+<li>Add items to the .gitignore files</li>
+<pre class="file-content"><code>virtual_environment/
+__pycache__/
+*.pyc
+*.sqlite3
+.env
+.code</code></pre>
+<li>Install GitHub CLI</li>
+<ul>
+<li>macOS/linux</li>
+<pre><code>brew install gh</code></pre>
+<li>Windows:</li>
+<pre><code>winget install --id GitHub.cli</code></pre>
+</ul>
+<li>Login to GitHub</li>
+<pre><code>gh auth login</code></pre>
+<li>Initialize Git and make the first commit:</li>
+<pre><code>git add .</code></pre>
+<pre><code>git commit -m "Initial commit"</code></pre>
+<li>Create a new private or public repository on GitHub from the terminal:</li>
+<pre><code>gh repo create your-repo-name --public --source=. --remote=origin --push</code></pre>
+<p class="description">This creates the repo, links it, and pushes your code in one step.</p>
+<li>Optional: Rename branch to main if needed:</li>
+<pre><code>git branch -M main</code></pre>
+<pre><code>git push -u origin main</code></pre>
+</ol>
+{% endblock %}

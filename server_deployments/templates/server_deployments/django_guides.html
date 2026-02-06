@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Django Guides - Server Configurations{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/django_guides.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="django-guides-container">
+    <div class="header">
+        <h1>Django Setup & Deployment Guides</h1>
+        <p>Comprehensive guides for Django project setup, deployment, and configuration.</p>
+    </div>
+
+    <div class="guides-grid">
+        {% for guide in guides %}
+        <div class="guide-card">
+            <h2>{{ guide.title }}</h2>
+            <p class="guide-description">{{ guide.description }}</p>
+            <div class="guide-meta">
+                <span class="step-count">{{ guide.steps.count }} step{{ guide.steps.count|pluralize }}</span>
+                <span class="updated">Updated: {{ guide.updated_at|date:"M d, Y" }}</span>
+            </div>
+            <a href="{% url 'django_guide_detail' guide.slug %}" class="view-guide-btn">View Guide →</a>
+        </div>
+        {% empty %}
+        <div class="no-guides">
+            <p>No guides available yet. Add guides through the admin panel.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

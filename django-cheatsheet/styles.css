@@ -1,0 +1,280 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f6f8;
+    color: #222;
+}
+
+.container {
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+h1, h2, h3 {
+    color: #005f73;
+}
+
+h1 {
+    margin-top: 0;
+    padding-bottom: 8px;
+}
+
+h3 {
+    margin-top: 25px;
+    margin-bottom: 15px;
+    padding-left: 10px;
+    border-left: 4px solid #005f73;
+    background-color: #f0f8ff;
+    padding: 10px 15px;
+    border-radius: 0 6px 6px 0;
+}
+
+ul {
+    padding-left: 2rem;
+}
+
+.p-padding {
+    padding: 4px 0;
+}
+
+pre {
+    background: #e8f4f8;
+    padding: 0.75rem;
+    overflow-x: auto;
+    border-radius: 6px;
+    margin: 8px 0;
+    border: 1px solid #d0d7de;
+}
+
+code {
+    font-family: 'Courier New', monospace;
+}
+
+button#backToTop {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 16px;
+    font-size: 14px;
+    background-color: #0077b6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: none;
+}
+
+button#backToTop:hover {
+    background-color: #023e8a;
+}
+
+.code-line {
+    position: relative;
+    display: block;
+    padding-right: 60px; /* Padding for the copy button */
+    white-space: pre; /* Preserve spaces */
+}
+
+.copy-button {
+    position: absolute;
+    float: right;
+    right: 0; /* Changed from negative to positive */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Perfect vertical centering */
+    background-color: #0077b6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    z-index: 10; /* Ensure button appears above code */
+}
+
+pre {
+    position: relative;
+    margin: 8px 0;
+    padding-right: 50px; /* Increased padding */
+    overflow-x: auto;
+    border-radius: 6px;
+    background: #eef;
+    padding: 0.75rem;
+}
+
+pre.file-content {
+    background: #f8f8ff;
+    border-left: 4px solid #7b9ed9;
+    padding: 0.75rem 0.75rem 0.75rem 1rem;
+    white-space: pre; /* Preserve spaces */
+}
+
+pre.file-content code {
+    color: #444; /* Darker text for better readability */
+}
+
+pre.file-content .copy-button {
+    background-color: #7b9ed9; /* Different color for file content copy button */
+}
+
+pre.file-content .copy-button:hover {
+    background-color: #5a78b1;
+}
+
+/* File content copy button */
+.file-content-copy {
+    position: absolute;
+    top: 20px;
+    right: 12px;
+    background-color: #7b9ed9;
+    z-index: 20;
+}
+
+.file-content-copy:hover {
+    background-color: #5a78b1;
+}
+
+li {
+    margin: 12px 0 8px 0;
+}
+
+.description {
+    font-style: italic;
+    color: #646464;
+}
+
+.file-path {
+    color: rgb(138, 140, 223);
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding-left: 4px;
+}
+
+/* Tab styles */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    background-color: #f1f1f1;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.tab-button:hover {
+    background-color: #ddd;
+}
+
+.tab-button.active {
+    background-color: #0077b6;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Navigation */
+nav {
+    background-color: #0077b6;
+    padding: 10px 0;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+nav li {
+    margin: 0 15px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+}
+
+nav a:hover {
+    background-color: #005f73;
+    border-radius: 4px;
+}
+
+/* Config Box */
+.config-box {
+    background-color: #f0f8ff;
+    border: 2px solid #0077b6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 8px;
+    margin-bottom: 24px;
+}
+
+.config-box label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #005f73;
+}
+
+.config-box input[type="text"] {
+    width: calc(100% - 120px);
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.config-box button {
+    padding: 8px 16px;
+    margin-top: 16px;
+    background-color: #0077b6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.config-box button:hover {
+    background-color: #005f73;
+}
+
+/* Command Groups */
+.command-group {
+    margin-bottom: 30px;
+    padding: 12px 12px 6px 12px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #acacac;
+}
+
+.command-group p {
+    font-weight: 500;
+    color: #005f73;
+    font-size: 0.95rem;
+}

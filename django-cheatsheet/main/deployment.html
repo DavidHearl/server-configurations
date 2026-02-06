@@ -1,0 +1,255 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Deployment - Django Cheatsheet{% endblock %}
+
+{% block content %}
+<h1>Deployment</h1>
+
+<div class="config-box">
+    <label for="githubUrl">GitHub Repository URL:</label>
+    <input type="text" id="githubUrl" placeholder="https://github.com/username/repository" />
+    <button onclick="updateCommands()">Update Commands</button>
+</div>
+
+<h3>1. Create project folder and clone your new app</h3>
+<div class="command-group">
+    <p><strong>Create project directory:</strong></p>
+    <pre><code>mkdir -p ~/apps/my-new-app</code></pre>
+    
+    <p><strong>Navigate to project directory:</strong></p>
+    <pre><code>cd ~/apps/my-new-app</code></pre>
+    
+    <p><strong>Clone repository:</strong></p>
+    <pre><code id="cloneCommand">git clone https://github.com/yourusername/yourproject.git .</code></pre>
+    
+    <p><em>Note: If you cannot clone yet, you can still create .env and docker-compose.yml first and clone later.</em></p>
+</div>
+
+<h3>2. Create the .env file (template)</h3>
+<div class="command-group">
+    <p><strong>Create .env file</strong></p>
+    <pre><code>touch .env</code></pre>
+
+    <p><strong>Add the the following content to the .env:</strong></p>
+    <pre class="file-content">
+<code>DJANGO_SETTINGS_MODULE=quiz.settings
+SECRET_KEY=CHANGE_ME_TO_A_LONG_RANDOM_STRING
+DEBUG=0
+
+Gunicorn logging (optional but helpful)
+GUNICORN_CMD_ARGS=--log-level info --access-logfile - --error-logfile -
+
+Hosts (comma-separated). Include the server IP/hostname AND your domain.
+ALLOWED_HOSTS=127.0.0.1,localhost,0.0.0.0,SERVER_IP,quiz_site.mediaservers.co.uk
+
+CSRF - include your public origin(s)
+CSRF_TRUSTED_ORIGINS=https://quiz_site.mediaservers.co.uk
+
+Database (Postgres example)
+DATABASE_URL=postgres://DB_USER:DB_PASS@DB_HOST:5432/DB_NAME
+
+Static & media locations inside the container
+STATIC_ROOT=/app/staticfiles
+MEDIA_ROOT=/app/media</code></pre>
+    
+    <p><strong>Notes:</strong></p>
+    <ul>
+        <li><code>SECRET_KEY</code> must be stable between restarts (generate once). You can generate locally with <code>python -c "import secrets; print(secrets.token_urlsafe(50))"</code></li>
+        <li>Add all IPs/hostnames you will hit in <code>ALLOWED_HOSTS</code></li>
+        <li>If using Cloudflare Tunnel, you still include the public hostname in <code>ALLOWED_HOSTS</code> and <code>CSRF_TRUSTED_ORIGINS</code></li>
+    </ul>
+</div>
+
+<h3>3. docker-compose.yml (listens on 8001)</h3>
+<div class="command-group">
+    <p><strong>Create docker-compose.yml with this content:</strong></p>
+    <pre class="file-content"><code>version: "3.9"
+services:
+  web:
+    build: .
+    image: my-new-app-web
+    env_file: .env
+    command: gunicorn quiz.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - "8001:8000"   # host:container (host 8001 is free)
+    volumes:
+      - staticfiles:/app/staticfiles
+      - media:/app/media
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.settimeout(2); s.connect(('127.0.0.1',8000)); print('ok')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  staticfiles:
+  media:</code></pre>
+</div>
+
+<h3>4. Dockerfile (if your repo doesn't have one)</h3>
+<div class="command-group">
+    <p><strong>Create Dockerfile with this content:</strong></p>
+    <pre class="file-content"><code>FROM python:3.10-slim
+WORKDIR /app
+
+# system deps for psycopg2, Pillow, lxml, etc.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libpq-dev libxml2-dev libxslt1-dev zlib1g-dev libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN python -m pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8000
+
+# Default command is provided by compose (gunicorn)</code></pre>
+</div>
+
+<h3>5. Ensure Django settings for static/WhiteNoise</h3>
+<div class="command-group">
+    <p><strong>Update your Django settings (e.g., quiz/settings.py):</strong></p>
+    <pre class="file-content"><code>INSTALLED_APPS = [
+    "django.contrib.staticfiles",
+    # ... other apps ...
+]
+
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # ... other middleware ...
+]
+
+STATIC_URL = "/static/"
+STATIC_ROOT = os.environ.get("STATIC_ROOT", BASE_DIR / "staticfiles")
+STATICFILES_DIRS = [BASE_DIR / "static"]  # if you have a top-level static/ in the repo
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"</code></pre>
+    
+    <p><strong>Note:</strong> Templates should use the <code>&lcub;% static %&rcub;</code> tag, not hard-coded /static URLs.</p>
+</div>
+
+<h3>6. Build, migrate, collect static, run</h3>
+<div class="command-group">
+    <p><strong>Build the Docker image:</strong></p>
+    <pre><code>docker compose build --no-cache</code></pre>
+    
+    <p><strong>Run database migrations:</strong></p>
+    <pre><code>docker compose run --rm web python manage.py migrate</code></pre>
+    
+    <p><strong>Collect static files:</strong></p>
+    <pre><code>docker compose run --rm web python manage.py collectstatic --noinput</code></pre>
+    
+    <p><strong>Start the application:</strong></p>
+    <pre><code>docker compose up -d</code></pre>
+    
+    <p><strong>View logs:</strong></p>
+    <pre><code>docker compose logs -f</code></pre>
+    
+    <p><strong>Test locally on the server:</strong></p>
+    <pre><code>curl -I http://127.0.0.1:8001/
+curl -I http://127.0.0.1:8001/static/</code></pre>
+    
+    <p><em>Note: If you see 200s and correct MIME types for CSS/JS, you're good.</em></p>
+</div>
+
+<h3>7. Set Django Sites framework domain (if used)</h3>
+<div class="command-group">
+    <p><strong>Update the site domain:</strong></p>
+    <pre><code>docker compose exec web python manage.py shell -c "
+from django.contrib.sites.models import Site; s=Site.objects.get(id=1);
+s.domain='quiz_site.mediaservers.co.uk'; s.name='quiz_site.mediaservers.co.uk'; s.save();
+print(Site.objects.values('id','domain','name'))
+"</code></pre>
+</div>
+
+<h3>8. Create superuser (optional but common)</h3>
+<div class="command-group">
+    <p><strong>Create Django superuser:</strong></p>
+    <pre><code>docker compose exec web python manage.py createsuperuser</code></pre>
+</div>
+
+<h3>9. Publish via Cloudflare Tunnel (recommended)</h3>
+<div class="command-group">
+    <p><strong>Install cloudflared and log in:</strong></p>
+    <pre><code>sudo apt install cloudflared
+cloudflared tunnel login</code></pre>
+    
+    <p><strong>Create tunnel and route:</strong></p>
+    <pre><code>cloudflared tunnel create quiz-site-tunnel
+cloudflared tunnel route dns quiz-site-tunnel quiz_site.mediaservers.co.uk</code></pre>
+    
+    <p><strong>Example config.yml:</strong></p>
+    <pre class="file-content"><code>tunnel: quiz-site-tunnel
+credentials-file: /home/django/.cloudflared/QUIZ_SITE_TUNNEL.json
+ingress:
+  - hostname: quiz_site.mediaservers.co.uk
+    service: http://127.0.0.1:8001
+  - service: http_status:404</code></pre>
+    
+    <p><strong>Run tunnel as a service:</strong></p>
+    <pre><code>sudo cloudflared service install quiz-site-tunnel</code></pre>
+</div>
+
+<h3>10. Common troubleshooting</h3>
+<div class="command-group">
+    <ul>
+        <li><strong>400/Bad Request, Invalid HTTP-HOST:</strong> Add the host/IP to ALLOWED_HOSTS, then <code>docker compose restart web</code></li>
+        <li><strong>500 on /:</strong> Check container logs, verify DB credentials, run migrations</li>
+        <li><strong>Static returns text/html:</strong> Switch templates to use <code>&lcub;% static 'path' %&rcub;</code> and re-run collectstatic</li>
+        <li><strong>Healthcheck is unhealthy:</strong> App may not be listening or crashed; run <code>docker compose logs web</code></li>
+        <li><strong>Admin CSS missing:</strong> Ensure WhiteNoise + collectstatic worked; admin CSS is served from STATIC_ROOT</li>
+    </ul>
+</div>
+
+<h3>Appendix A: Minimal requirements.txt (example)</h3>
+<div class="command-group">
+    <pre class="file-content"><code>Django>=4.2,<5.0
+gunicorn>=21.2
+whitenoise>=6.7
+psycopg2-binary>=2.9
+pillow>=10.0
+django-environ>=0.11
+dj-database-url>=2.2</code></pre>
+</div>
+
+<h3>Appendix B: Verifying from outside</h3>
+<div class="command-group">
+    <p><strong>Test from your laptop:</strong></p>
+    <pre><code>curl -I https://quiz_site.mediaservers.co.uk/</code></pre>
+    
+    <p><em>Note: You should see 200 OK (or 302/301 depending on your LOGIN_URL) and the Server: cloudflare header if using a Tunnel.</em></p>
+</div>
+
+<script>
+function updateCommands() {
+    const githubUrl = document.getElementById('githubUrl').value.trim();
+    
+    if (!githubUrl) {
+        alert('Please enter a GitHub URL');
+        return;
+    }
+    
+    // Extract project name from GitHub URL
+    // Example: https://github.com/username/repository.git or https://github.com/username/repository
+    const match = githubUrl.match(/github\.com\/[\w-]+\/([\w-]+)(\.git)?$/);
+    
+    if (!match) {
+        alert('Invalid GitHub URL format');
+        return;
+    }
+    
+    const projectName = match[1];
+    
+    // Update clone command
+    const cloneCommand = document.getElementById('cloneCommand');
+    cloneCommand.textContent = `git clone ${githubUrl} .`;
+    
+    // Re-initialize copy buttons for updated commands
+    initializeCopyButtons();
+}
+</script>
+{% endblock %}

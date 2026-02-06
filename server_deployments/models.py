@@ -176,3 +176,43 @@ class System(models.Model):
 #         return self.full_path
 
 
+class DjangoGuide(models.Model):
+    """A guide/section for Django documentation (e.g., New Project, Deployment)"""
+    title = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True)
+    description = models.TextField(blank=True)
+    order = models.PositiveIntegerField(default=0, help_text="Display order in navigation")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', 'title']
+
+    def __str__(self):
+        return self.title
+
+
+class DjangoStep(models.Model):
+    """A step within a guide with content"""
+    guide = models.ForeignKey(DjangoGuide, on_delete=models.CASCADE, related_name='steps')
+    title = models.CharField(max_length=255)
+    content = models.TextField(help_text="Content in HTML format")
+    order = models.PositiveIntegerField(default=0, help_text="Display order within the guide")
+    step_type = models.CharField(
+        max_length=20,
+        choices=[
+            ('section', 'Section'),
+            ('command', 'Command'),
+            ('code', 'Code Block'),
+            ('note', 'Note'),
+        ],
+        default='section'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.guide.title} - {self.title}"

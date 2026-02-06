@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Home - Django Cheatsheet{% endblock %}
+
+{% block content %}
+<h1>Welcome to Django Cheatsheet</h1>
+<p class="p-padding">This is a comprehensive guide to setting up and deploying Django applications.</p>
+<p class="p-padding">Use the navigation above to explore different sections:</p>
+<ul>
+<li><a href="{% url 'new_project' %}">New Project</a> - Learn how to create a new Django project from scratch.</li>
+<li><a href="{% url 'deployment' %}">Deployment</a> - Step-by-step guide to deploying Django on Debian.</li>
+<li><a href="{% url 'redeployment' %}">Redeployment</a> - Instructions for redeploying with Docker.</li>
+</ul>
+{% endblock %}

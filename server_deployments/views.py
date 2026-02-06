@@ -7,16 +7,20 @@ from django.core.paginator import Paginator
 from datetime import timedelta
 from django.db.models import Q, Count, Sum
 from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
 import os
 
 
+@login_required
 def home(request):
     return render(request, 'server_deployments/home.html')
 
+@login_required
 def systems(request):
     return render(request, 'server_deployments/home.html')
 
 
+@login_required
 def components(request):
     """View for displaying and adding components"""
     # Get all component types
@@ -113,6 +117,7 @@ def components(request):
     
     return render(request, 'server_deployments/components.html', context)
 
+@login_required
 def add_cpu(request):
     if request.method == 'POST':
         form = CPUForm(request.POST)
@@ -120,6 +125,7 @@ def add_cpu(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_cpu(request, cpu_id):
     cpu = get_object_or_404(CPU, id=cpu_id)
     if request.method == 'POST':
@@ -129,12 +135,14 @@ def edit_cpu(request, cpu_id):
             return redirect('components')
     return redirect(f'/components/?edit={cpu_id}&type=cpu&tab=cpu-tab')
 
+@login_required
 def delete_cpu(request, cpu_id):
     cpu = get_object_or_404(CPU, id=cpu_id)
     if request.method == 'POST':
         cpu.delete()
     return redirect('components')
 
+@login_required
 def add_ram(request):
     if request.method == 'POST':
         form = RAMForm(request.POST)
@@ -142,6 +150,7 @@ def add_ram(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_ram(request, ram_id):
     ram = get_object_or_404(RAM, id=ram_id)
     if request.method == 'POST':
@@ -151,6 +160,7 @@ def edit_ram(request, ram_id):
             return redirect('components')
     return redirect(f'/components/?edit={ram_id}&type=ram&tab=ram-tab')
 
+@login_required
 def delete_ram(request, ram_id):
     ram = get_object_or_404(RAM, id=ram_id)
     if request.method == 'POST':
@@ -159,6 +169,7 @@ def delete_ram(request, ram_id):
 
 
 # Motherboard CRUD operations
+@login_required
 def add_motherboard(request):
     if request.method == 'POST':
         form = MotherboardForm(request.POST)
@@ -166,6 +177,7 @@ def add_motherboard(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_motherboard(request, motherboard_id):
     motherboard = get_object_or_404(Motherboard, id=motherboard_id)
     if request.method == 'POST':
@@ -175,6 +187,7 @@ def edit_motherboard(request, motherboard_id):
             return redirect('components')
     return redirect(f'/components/?edit={motherboard_id}&type=motherboard&tab=motherboard-tab')
 
+@login_required
 def delete_motherboard(request, motherboard_id):
     motherboard = get_object_or_404(Motherboard, id=motherboard_id)
     if request.method == 'POST':
@@ -183,6 +196,7 @@ def delete_motherboard(request, motherboard_id):
 
 
 # NIC CRUD operations
+@login_required
 def add_nic(request):
     if request.method == 'POST':
         form = NICForm(request.POST)
@@ -190,6 +204,7 @@ def add_nic(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_nic(request, nic_id):
     nic = get_object_or_404(NIC, id=nic_id)
     if request.method == 'POST':
@@ -199,6 +214,7 @@ def edit_nic(request, nic_id):
             return redirect('components')
     return redirect(f'/components/?edit={nic_id}&type=nic&tab=nic-tab')
 
+@login_required
 def delete_nic(request, nic_id):
     nic = get_object_or_404(NIC, id=nic_id)
     if request.method == 'POST':
@@ -207,6 +223,7 @@ def delete_nic(request, nic_id):
 
 
 # PSU CRUD operations
+@login_required
 def add_psu(request):
     if request.method == 'POST':
         form = PSUForm(request.POST)
@@ -214,6 +231,7 @@ def add_psu(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_psu(request, psu_id):
     psu = get_object_or_404(PSU, id=psu_id)
     if request.method == 'POST':
@@ -223,6 +241,7 @@ def edit_psu(request, psu_id):
             return redirect('components')
     return redirect(f'/components/?edit={psu_id}&type=psu&tab=psu-tab')
 
+@login_required
 def delete_psu(request, psu_id):
     psu = get_object_or_404(PSU, id=psu_id)
     if request.method == 'POST':
@@ -231,6 +250,7 @@ def delete_psu(request, psu_id):
 
 
 # Case CRUD operations
+@login_required
 def add_case(request):
     if request.method == 'POST':
         form = CaseForm(request.POST)
@@ -238,6 +258,7 @@ def add_case(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_case(request, case_id):
     case = get_object_or_404(Case, id=case_id)
     if request.method == 'POST':
@@ -247,6 +268,7 @@ def edit_case(request, case_id):
             return redirect('components')
     return redirect(f'/components/?edit={case_id}&type=case&tab=case-tab')
 
+@login_required
 def delete_case(request, case_id):
     case = get_object_or_404(Case, id=case_id)
     if request.method == 'POST':
@@ -255,6 +277,7 @@ def delete_case(request, case_id):
 
 
 # Storage CRUD operations
+@login_required
 def add_storage(request):
     if request.method == 'POST':
         form = StorageDeviceForm(request.POST)
@@ -262,6 +285,7 @@ def add_storage(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_storage(request, storage_id):
     storage = get_object_or_404(StorageDevice, id=storage_id)
     if request.method == 'POST':
@@ -271,6 +295,7 @@ def edit_storage(request, storage_id):
             return redirect('components')
     return redirect(f'/components/?edit={storage_id}&type=storage&tab=storage-tab')
 
+@login_required
 def delete_storage(request, storage_id):
     storage = get_object_or_404(StorageDevice, id=storage_id)
     if request.method == 'POST':
@@ -278,6 +303,7 @@ def delete_storage(request, storage_id):
     return redirect('components')
 
 # HBA CRUD operations
+@login_required
 def add_hba(request):
     if request.method == 'POST':
         form = HBAForm(request.POST)
@@ -285,6 +311,7 @@ def add_hba(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_hba(request, hba_id):
     hba = get_object_or_404(HBA, id=hba_id)
     if request.method == 'POST':
@@ -294,6 +321,7 @@ def edit_hba(request, hba_id):
             return redirect('components')
     return redirect(f'/components/?edit={hba_id}&type=hba&tab=hba-tab')
 
+@login_required
 def delete_hba(request, hba_id):
     hba = get_object_or_404(HBA, id=hba_id)
     if request.method == 'POST':
@@ -302,6 +330,7 @@ def delete_hba(request, hba_id):
 
 
 # GPU CRUD operations
+@login_required
 def add_gpu(request):
     if request.method == 'POST':
         form = GPUForm(request.POST)
@@ -309,6 +338,7 @@ def add_gpu(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_gpu(request, gpu_id):
     gpu = get_object_or_404(GPU, id=gpu_id)
     if request.method == 'POST':
@@ -318,6 +348,7 @@ def edit_gpu(request, gpu_id):
             return redirect('components')
     return redirect(f'/components/?edit={gpu_id}&type=gpu&tab=gpu-tab')
 
+@login_required
 def delete_gpu(request, gpu_id):
     gpu = get_object_or_404(GPU, id=gpu_id)
     if request.method == 'POST':
@@ -326,6 +357,7 @@ def delete_gpu(request, gpu_id):
 
 
 # Rack CRUD operations
+@login_required
 def add_rack(request):
     if request.method == 'POST':
         form = RackForm(request.POST)
@@ -333,6 +365,7 @@ def add_rack(request):
             form.save()
     return redirect('components')
 
+@login_required
 def edit_rack(request, rack_id):
     rack = get_object_or_404(Rack, id=rack_id)
     if request.method == 'POST':
@@ -342,6 +375,7 @@ def edit_rack(request, rack_id):
             return redirect('components')
     return redirect(f'/components/?edit={rack_id}&type=rack&tab=rack-tab')
 
+@login_required
 def delete_rack(request, rack_id):
     rack = get_object_or_404(Rack, id=rack_id)
     if request.method == 'POST':
@@ -349,6 +383,7 @@ def delete_rack(request, rack_id):
     return redirect('components')
 
 
+@login_required
 def databases(request):
     base_path = request.GET.get("base_path", "/mnt")
     folders = IndexedFolder.objects.filter(path__startswith=base_path).order_by("path")
@@ -373,6 +408,7 @@ def databases(request):
     })
 
 
+@login_required
 def storage_view(request):
     # Handle form submission
     if request.method == 'POST':
@@ -636,6 +672,7 @@ def storage_view(request):
     })
 
 
+@login_required
 def add_storage(request):
     system_id = request.GET.get('system')
     
@@ -662,6 +699,7 @@ def add_storage(request):
     })
 
 
+@login_required
 def edit_storage(request, storage_id):
     storage = get_object_or_404(StorageDevice, id=storage_id)
     
@@ -767,6 +805,7 @@ def edit_storage(request, storage_id):
     })
 
 
+@login_required
 def delete_storage(request, storage_id):
     storage = get_object_or_404(StorageDevice, id=storage_id)
     
@@ -787,3 +826,118 @@ def delete_storage(request, storage_id):
     
     # For GET requests, redirect to storage view
     return redirect('storage_view')
+
+# Django Guides Views
+@login_required
+def django_guides(request):
+    """Main page showing all Django guides"""
+    guides = DjangoGuide.objects.all()
+    return render(request, 'server_deployments/django_guides.html', {
+        'guides': guides
+    })
+
+
+@login_required
+def django_guide_detail(request, slug):
+    """Detail page for a specific guide showing all steps"""
+    guide = get_object_or_404(DjangoGuide, slug=slug)
+    steps = guide.steps.all()
+    all_guides = DjangoGuide.objects.all()
+    
+    return render(request, 'server_deployments/django_guide_detail.html', {
+        'guide': guide,
+        'steps': steps,
+        'all_guides': all_guides
+    })
+
+
+@login_required
+def django_step_add(request, guide_slug):
+    """Add a new step to a guide"""
+    guide = get_object_or_404(DjangoGuide, slug=guide_slug)
+    
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        step_type = request.POST.get('step_type', 'section')
+        order = request.POST.get('order', 0)
+        
+        DjangoStep.objects.create(
+            guide=guide,
+            title=title,
+            content=content,
+            step_type=step_type,
+            order=order
+        )
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+        
+        return redirect('django_guide_detail', slug=guide_slug)
+    
+    return redirect('django_guide_detail', slug=guide_slug)
+
+
+@login_required
+def django_step_edit(request, step_id):
+    """Edit an existing step"""
+    step = get_object_or_404(DjangoStep, id=step_id)
+    
+    if request.method == 'POST':
+        step.title = request.POST.get('title', step.title)
+        step.content = request.POST.get('content', step.content)
+        step.step_type = request.POST.get('step_type', step.step_type)
+        step.order = request.POST.get('order', step.order)
+        step.save()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+        
+        return redirect('django_guide_detail', slug=step.guide.slug)
+    
+    # Return step data for AJAX requests
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'id': step.id,
+            'title': step.title,
+            'content': step.content,
+            'step_type': step.step_type,
+            'order': step.order
+        })
+    
+    return redirect('django_guide_detail', slug=step.guide.slug)
+
+
+@login_required
+def django_step_delete(request, step_id):
+    """Delete a step"""
+    step = get_object_or_404(DjangoStep, id=step_id)
+    guide_slug = step.guide.slug
+    
+    if request.method == 'POST':
+        step.delete()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+        
+        return redirect('django_guide_detail', slug=guide_slug)
+    
+    return redirect('django_guide_detail', slug=guide_slug)
+
+
+@login_required
+def django_step_reorder(request):
+    """Update step orders via AJAX"""
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        import json
+        data = json.loads(request.body)
+        
+        for item in data.get('steps', []):
+            step_id = item.get('id')
+            new_order = item.get('order')
+            if step_id and new_order is not None:
+                DjangoStep.objects.filter(id=step_id).update(order=new_order)
+        
+        return JsonResponse({'success': True})
+    
+    return JsonResponse({'success': False}, status=400)
