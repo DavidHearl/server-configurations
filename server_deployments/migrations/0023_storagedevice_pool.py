@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='storagedevice',
             name='pool',
-            field=models.CharField(blank=None, null=True),
+            field=models.CharField(blank=True, null=True, max_length=255),
         ),
     ]

@@ -55,3 +55,15 @@ class HBAForm(forms.ModelForm):
     class Meta:
         model = HBA
         fields = '__all__'
+
+class DashboardLinkForm(forms.ModelForm):
+    class Meta:
+        model = DashboardLink
+        fields = ['name', 'url', 'icon', 'category', 'tab', 'description', 'order', 'active']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'e.g., Virgin Router'}),
+            'url': forms.URLInput(attrs={'placeholder': 'http://192.168.1.1'}),
+            'icon': forms.TextInput(attrs={'placeholder': 'icons/router.png'}),
+            'description': forms.TextInput(attrs={'placeholder': '192.168.1.1'}),
+            'order': forms.NumberInput(attrs={'min': 0}),
+        }

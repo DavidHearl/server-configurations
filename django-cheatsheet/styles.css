@@ -164,8 +164,6 @@ li {
 /* Tab styles */
 .tabs {
     display: flex;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 20px;
 }
 
 .tab-button {

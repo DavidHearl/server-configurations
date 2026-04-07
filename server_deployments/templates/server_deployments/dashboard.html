@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/components.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Homelab Dashboard</h1>
+        <div class="header-controls">
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('network')">Network</button>
+                <button class="tab-button" onclick="showTab('apps')">Apps</button>
+                <button class="tab-button" onclick="showTab('public')">Public</button>
+            </div>
+            <button class="add-link-btn" onclick="openAddModal()">+ Add Link</button>
+        </div>
+    </div>
+
+    <!-- Network Tab -->
+    <div id="network-tab" class="tab-view active">
+        {% if network_categories %}
+            {% for category, link_groups in network_categories.items %}
+            <div class="category-section">
+                <h2>{{ category|title }}</h2>
+                <div class="link-table">
+                    {% for group in link_groups %}
+                    <div class="table-row">
+                        <div class="row-icon">
+                            {% if group.icon %}
+                            <img src="{% static group.icon %}" alt="{{ group.name }}">
+                            {% else %}
+                            <img src="{% static 'icons/default.png' %}" alt="{{ group.name }}">
+                            {% endif %}
+                        </div>
+                        <div class="row-name">
+                            <span>{{ group.name }}</span>
+                        </div>
+                        <div class="row-links">
+                            {% for link in group.links %}
+                            <a href="{{ link.url }}" target="_blank" class="link-button">
+                                {% if 'Tailscale' in link.name %}
+                                <span class="link-badge tailscale">Tailscale</span>
+                                {% else %}
+                                <span class="link-badge internal">Internal</span>
+                                {% endif %}
+                                <span class="link-url">{{ link.description }}</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        <div class="row-actions">
+                            <button class="icon-btn edit-btn" onclick="openEditModal({{ group.links.0.id }}); event.stopPropagation();" title="Edit">✎</button>
+                            <button class="icon-btn delete-btn" onclick="deleteLink({{ group.links.0.id }}); event.stopPropagation();" title="Delete">✕</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p>No network links added yet. Click "Add Link" to get started!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Apps Tab -->
+    <div id="apps-tab" class="tab-view">
+        {% if apps_categories %}
+            {% for category, link_groups in apps_categories.items %}
+            <div class="category-section">
+                <h2>{{ category|title }}</h2>
+                <div class="link-table">
+                    {% for group in link_groups %}
+                    <div class="table-row">
+                        <div class="row-icon">
+                            {% if group.icon %}
+                            <img src="{% static group.icon %}" alt="{{ group.name }}">
+                            {% else %}
+                            <img src="{% static 'icons/default.png' %}" alt="{{ group.name }}">
+                            {% endif %}
+                        </div>
+                        <div class="row-name">
+                            <span>{{ group.name }}</span>
+                        </div>
+                        <div class="row-links">
+                            {% for link in group.links %}
+                            <a href="{{ link.url }}" target="_blank" class="link-button">
+                                {% if 'Tailscale' in link.name %}
+                                <span class="link-badge tailscale">Tailscale</span>
+                                {% else %}
+                                <span class="link-badge internal">Internal</span>
+                                {% endif %}
+                                <span class="link-url">{{ link.description }}</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        <div class="row-actions">
+                            <button class="icon-btn edit-btn" onclick="openEditModal({{ group.links.0.id }}); event.stopPropagation();" title="Edit">✎</button>
+                            <button class="icon-btn delete-btn" onclick="deleteLink({{ group.links.0.id }}); event.stopPropagation();" title="Delete">✕</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p>No app links added yet. Click "Add Link" to get started!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Public Tab -->
+    <div id="public-tab" class="tab-view">
+        {% if public_categories %}
+            {% for category, link_groups in public_categories.items %}
+            <div class="category-section">
+                <h2>{{ category|title }}</h2>
+                <div class="link-table">
+                    {% for group in link_groups %}
+                    <div class="table-row">
+                        <div class="row-icon">
+                            {% if group.icon %}
+                            <img src="{% static group.icon %}" alt="{{ group.name }}">
+                            {% else %}
+                            <img src="{% static 'icons/default.png' %}" alt="{{ group.name }}">
+                            {% endif %}
+                        </div>
+                        <div class="row-name">
+                            <span>{{ group.name }}</span>
+                        </div>
+                        <div class="row-links">
+                            {% for link in group.links %}
+                            <a href="{{ link.url }}" target="_blank" class="link-button">
+                                <span class="link-badge public">Public</span>
+                                <span class="link-url">{{ link.description }}</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        <div class="row-actions">
+                            <button class="icon-btn edit-btn" onclick="openEditModal({{ group.links.0.id }}); event.stopPropagation();" title="Edit">✎</button>
+                            <button class="icon-btn delete-btn" onclick="deleteLink({{ group.links.0.id }}); event.stopPropagation();" title="Delete">✕</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p>No public links added yet. Click "Add Link" to get started!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="linkModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Add Link</h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="linkForm" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="url">URL *</label>
+                <input type="url" id="url" name="url" required>
+            </div>
+            <div class="form-group">
+                <label for="icon">Icon Path</label>
+                <input type="text" id="icon" name="icon" placeholder="icons/router.png">
+            </div>
+            <div class="form-group">
+                <label for="category">Category *</label>
+                <select id="category" name="category" required>
+                    <option value="network">Network</option>
+                    <option value="unraid">UNRAID</option>
+                    <option value="servers">Servers</option>
+                    <option value="docker">Docker</option>
+                    <option value="services">Services</option>
+                    <option value="monitoring">Monitoring</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tab">Tab *</label>
+                <select id="tab" name="tab" required>
+                    <option value="network">Network</option>
+                    <option value="apps">Apps</option>
+                    <option value="public">Public</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" id="description" name="description" placeholder="192.168.1.1">
+            </div>
+            <div class="form-group">
+                <label for="order">Order</label>
+                <input type="number" id="order" name="order" value="0" min="0">
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="active" name="active" checked>
+                    Active
+                </label>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showTab(tabName) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-view').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Show selected tab
+        document.getElementById(tabName + '-tab').classList.add('active');
+        
+        // Activate button
+        event.target.classList.add('active');
+    }
+
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'Add Link';
+        document.getElementById('linkForm').action = '{% url "add_dashboard_link" %}';
+        document.getElementById('linkForm').reset();
+        document.getElementById('active').checked = true;
+        document.getElementById('linkModal').classList.add('active');
+    }
+
+    function openEditModal(linkId) {
+        document.getElementById('modalTitle').textContent = 'Edit Link';
+        
+        // Fetch link data
+        fetch(`/dashboard/${linkId}/edit/`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('linkForm').action = `/dashboard/${linkId}/edit/`;
+            document.getElementById('name').value = data.name;
+            document.getElementById('url').value = data.url;
+            document.getElementById('icon').value = data.icon || '';
+            document.getElementById('category').value = data.category;
+            document.getElementById('tab').value = data.tab;
+            document.getElementById('description').value = data.description || '';
+            document.getElementById('order').value = data.order;
+            document.getElementById('active').checked = data.active;
+            document.getElementById('linkModal').classList.add('active');
+        });
+    }
+
+    function closeModal() {
+        document.getElementById('linkModal').classList.remove('active');
+    }
+
+    function deleteLink(linkId) {
+        if (confirm('Are you sure you want to delete this link?')) {
+            fetch(`/dashboard/${linkId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('linkModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}

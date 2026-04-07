@@ -67,4 +67,10 @@ urlpatterns = [
     path('django-guides/step/<int:step_id>/edit/', views.django_step_edit, name='django_step_edit'),
     path('django-guides/step/<int:step_id>/delete/', views.django_step_delete, name='django_step_delete'),
     path('django-guides/step/reorder/', views.django_step_reorder, name='django_step_reorder'),
+    
+    # Dashboard routes
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/add/', views.add_dashboard_link, name='add_dashboard_link'),
+    path('dashboard/<int:link_id>/edit/', views.edit_dashboard_link, name='edit_dashboard_link'),
+    path('dashboard/<int:link_id>/delete/', views.delete_dashboard_link, name='delete_dashboard_link'),
 ]

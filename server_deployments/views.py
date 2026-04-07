@@ -941,3 +941,119 @@ def django_step_reorder(request):
         return JsonResponse({'success': True})
     
     return JsonResponse({'success': False}, status=400)
+
+
+# Dashboard Views
+@login_required
+def dashboard(request):
+    """Main dashboard view showing all links grouped by tab and category"""
+    # Get all active links
+    network_links = DashboardLink.objects.filter(tab='network', active=True)
+    apps_links = DashboardLink.objects.filter(tab='apps', active=True)
+    public_links = DashboardLink.objects.filter(tab='public', active=True)
+    
+    # Group links by category for each tab
+    def group_by_category(links):
+        categories = {}
+        for link in links:
+            if link.category not in categories:
+                categories[link.category] = []
+            categories[link.category].append(link)
+        return categories
+    
+    # Group links by base name (combining internal + tailscale versions)
+    def group_by_base_name(links):
+        grouped = {}
+        for link in links:
+            # Remove " (Tailscale)" suffix to get base name
+            base_name = link.name.replace(' (Tailscale)', '')
+            if base_name not in grouped:
+                grouped[base_name] = {
+                    'name': base_name,
+                    'icon': link.icon,
+                    'category': link.category,
+                    'links': []
+                }
+            grouped[base_name]['links'].append(link)
+        return list(grouped.values())
+    
+    # Process each tab
+    network_categories = {}
+    for category, links in group_by_category(network_links).items():
+        network_categories[category] = group_by_base_name(links)
+    
+    apps_categories = {}
+    for category, links in group_by_category(apps_links).items():
+        apps_categories[category] = group_by_base_name(links)
+    
+    public_categories = {}
+    for category, links in group_by_category(public_links).items():
+        public_categories[category] = group_by_base_name(links)
+    
+    context = {
+        'network_categories': network_categories,
+        'apps_categories': apps_categories,
+        'public_categories': public_categories,
+        'dashboard_form': DashboardLinkForm(),
+    }
+    
+    return render(request, 'server_deployments/dashboard.html', context)
+
+
+@login_required
+def add_dashboard_link(request):
+    """Add a new dashboard link"""
+    if request.method == 'POST':
+        form = DashboardLinkForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    return redirect('dashboard')
+
+
+@login_required
+def edit_dashboard_link(request, link_id):
+    """Edit an existing dashboard link"""
+    link = get_object_or_404(DashboardLink, id=link_id)
+    
+    if request.method == 'POST':
+        form = DashboardLinkForm(request.POST, instance=link)
+        if form.is_valid():
+            form.save()
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': True})
+            
+            return redirect('dashboard')
+    
+    # Return link data for AJAX requests
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'id': link.id,
+            'name': link.name,
+            'url': link.url,
+            'icon': link.icon,
+            'category': link.category,
+            'tab': link.tab,
+            'description': link.description,
+            'order': link.order,
+            'active': link.active,
+        })
+    
+    return redirect('dashboard')
+
+
+@login_required
+def delete_dashboard_link(request, link_id):
+    """Delete a dashboard link"""
+    link = get_object_or_404(DashboardLink, id=link_id)
+    
+    if request.method == 'POST':
+        link.delete()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+        
+        return redirect('dashboard')
+    
+    return redirect('dashboard')

@@ -33,5 +33,16 @@ admin.site.register(Case)
 admin.site.register(Rack)
 admin.site.register(System)
 admin.site.register(StorageDevice)
+
+
+@admin.register(DashboardLink)
+class DashboardLinkAdmin(admin.ModelAdmin):
+    list_display = ['name', 'url', 'category', 'tab', 'order', 'active', 'updated_at']
+    list_filter = ['tab', 'category', 'active']
+    list_editable = ['order', 'active']
+    search_fields = ['name', 'url', 'description']
+    ordering = ['tab', 'category', 'order', 'name']
+
+
 # admin.site.register(IndexedFile)
 # admin.site.register(IndexedFolder)

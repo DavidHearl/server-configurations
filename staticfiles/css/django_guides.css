@@ -1,0 +1,444 @@
+/* Django Guides Styles */
+
+.django-guides-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.header h1 {
+    color: #005f73;
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.guides-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.guide-card {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.guide-card:hover {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.guide-card h2 {
+    color: #0077b6;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.guide-description {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.guide-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.step-count {
+    font-weight: 600;
+    color: #0077b6;
+}
+
+.view-guide-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0077b6;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.view-guide-btn:hover {
+    background-color: #005f8a;
+}
+
+.no-guides {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    color: #888;
+}
+
+/* Guide Detail Page */
+
+.django-guide-detail {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.guide-nav {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.back-link {
+    color: #0077b6;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.guide-nav-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.guide-nav-links a {
+    padding: 8px 15px;
+    background: #f0f8ff;
+    color: #0077b6;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.guide-nav-links a:hover {
+    background: #d4e9f7;
+}
+
+.guide-nav-links a.active {
+    background: #0077b6;
+    color: white;
+}
+
+.guide-header {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.guide-header h1 {
+    color: #005f73;
+    margin-bottom: 15px;
+}
+
+.add-step-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 15px;
+    transition: background-color 0.2s;
+}
+
+.add-step-btn:hover {
+    background-color: #218838;
+}
+
+.steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.step-item {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 4px solid #0077b6;
+    cursor: move;
+    transition: box-shadow 0.2s;
+}
+
+.step-item:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.step-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.step-drag-handle {
+    cursor: grab;
+    color: #aaa;
+    font-size: 1.2rem;
+    user-select: none;
+}
+
+.step-drag-handle:active {
+    cursor: grabbing;
+}
+
+.step-type-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.step-type-badge.section {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.step-type-badge.command {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.step-type-badge.code {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.step-type-badge.note {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.step-title {
+    flex: 1;
+    margin: 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.step-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-btn, .delete-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+}
+
+.edit-btn {
+    background-color: #0077b6;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #005f8a;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.step-content {
+    line-height: 1.6;
+    color: #444;
+}
+
+.step-content h2, .step-content h3 {
+    color: #005f73;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.step-content pre {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    border-left: 4px solid #0077b6;
+}
+
+.step-content code {
+    font-family: 'Courier New', monospace;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.step-content ul, .step-content ol {
+    padding-left: 25px;
+    margin: 10px 0;
+}
+
+.step-content li {
+    margin: 8px 0;
+}
+
+.no-steps {
+    text-align: center;
+    padding: 50px;
+    color: #888;
+    background: white;
+    border-radius: 8px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 50px auto;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-group textarea {
+    font-family: 'Courier New', monospace;
+    resize: vertical;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 25px;
+}
+
+.submit-btn, .cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.submit-btn {
+    background-color: #0077b6;
+    color: white;
+}
+
+.submit-btn:hover {
+    background-color: #005f8a;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .guides-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .guide-nav-links {
+        flex-direction: column;
+    }
+    
+    .step-header {
+        flex-wrap: wrap;
+    }
+    
+    .step-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

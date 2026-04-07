@@ -216,3 +216,45 @@ class DjangoStep(models.Model):
 
     def __str__(self):
         return f"{self.guide.title} - {self.title}"
+
+
+class DashboardLink(models.Model):
+    """A link to be displayed in the dashboard"""
+    name = models.CharField(max_length=255, help_text="Display name for the link")
+    url = models.URLField(help_text="URL to navigate to")
+    icon = models.CharField(max_length=255, blank=True, help_text="Icon filename or path")
+    category = models.CharField(
+        max_length=50,
+        choices=[
+            ('network', 'Network'),
+            ('unraid', 'UNRAID'),
+            ('servers', 'Servers'),
+            ('docker', 'Docker'),
+            ('services', 'Services'),
+            ('monitoring', 'Monitoring'),
+            ('other', 'Other'),
+        ],
+        default='other',
+        help_text="Category for grouping links"
+    )
+    tab = models.CharField(
+        max_length=20,
+        choices=[
+            ('network', 'Network'),
+            ('apps', 'Apps'),
+            ('public', 'Public'),
+        ],
+        default='network',
+        help_text="Which dashboard tab to show this link on"
+    )
+    description = models.CharField(max_length=255, blank=True, help_text="Additional description (e.g., IP address)")
+    order = models.PositiveIntegerField(default=0, help_text="Display order within category")
+    active = models.BooleanField(default=True, help_text="Whether to display this link")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['tab', 'category', 'order', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.tab}/{self.category})"
