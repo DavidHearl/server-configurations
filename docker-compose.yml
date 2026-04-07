@@ -4,7 +4,9 @@ services:
   web:
     build: .
     entrypoint: []
-    command: ["gunicorn","server_configurations.wsgi:application","--bind","0.0.0.0:8000","--workers","3","--log-level","info","--access-logfile","-","--error-logfile","-"]
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             gunicorn server_configurations.wsgi:application --bind 0.0.0.0:8000 --workers 3 --log-level info --access-logfile - --error-logfile -"
 
     networks: [traefik-net]
 
