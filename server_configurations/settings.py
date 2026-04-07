@@ -27,9 +27,17 @@ load_dotenv('.env')
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = ['100.113.6.98', 'localhost', 'server-configurations.mediaservers.co.uk']
+
+# CSRF settings for production
+CSRF_TRUSTED_ORIGINS = [
+    'http://100.113.6.98',
+    'http://localhost',
+    'http://server-configurations.mediaservers.co.uk',
+    'https://server-configurations.mediaservers.co.uk',
+]
 
 
 # Application definition
@@ -152,3 +160,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
